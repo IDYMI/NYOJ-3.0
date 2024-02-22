@@ -7,80 +7,64 @@
           mode="horizontal"
           router
           active-text-color="#2196f3"
-          text-color="#495060"
+          class="custom-menu"
         >
+          <router-link to="/home" v-if="mode == 'defalut'">
+            <el-image :src="big_imgUrl" style="width:100%;"></el-image>
+          </router-link>
           <div class="logo">
-            <el-tooltip
-              :content="$t('m.Click_To_Change_Web_Language')"
-              placement="bottom"
-              effect="dark"
-            >
-              <el-image
-                style="width: 139px; height: 50px"
-                :src="imgUrl"
-                fit="scale-down"
-                @click="changeWebLanguage"
-              ></el-image>
-            </el-tooltip>
+            <router-link to="/home">
+              <el-image style="width: 139px; height: 50px" :src="imgUrl" fit="scale-down"></el-image>
+            </router-link>
           </div>
           <template v-if="mode == 'defalut'">
             <el-menu-item index="/home">
               <i class="el-icon-s-home"></i>
-              {{ $t('m.NavBar_Home') }}
+              {{ $t("m.NavBar_Home") }}
+            </el-menu-item>
+            <el-menu-item index="/announcement">
+              <i class="el-icon-s-flag"></i>
+              {{ $t("m.Announcement") }}
             </el-menu-item>
             <el-menu-item index="/problem">
               <i class="el-icon-s-grid"></i>
-              {{ $t('m.NavBar_Problem') }}
+              {{ $t("m.NavBar_Problem") }}
             </el-menu-item>
             <el-menu-item index="/training">
               <i class="el-icon-s-claim"></i>
-              {{ $t('m.NavBar_Training') }}
+              {{ $t("m.NavBar_Training") }}
             </el-menu-item>
             <el-menu-item index="/contest">
               <i class="el-icon-trophy"></i>
-              {{ $t('m.NavBar_Contest') }}
+              {{ $t("m.NavBar_Contest") }}
             </el-menu-item>
             <el-menu-item index="/status">
               <i class="el-icon-s-marketing"></i>
-              {{ $t('m.NavBar_Status') }}
+              {{ $t("m.NavBar_Status") }}
+            </el-menu-item>
+            <el-menu-item index="/group">
+              <i class="fa fa-users navbar-icon"></i>
+              {{ $t("m.NavBar_Group") }}
+            </el-menu-item>
+            <el-menu-item index="/discussion" v-if="websiteConfig.openPublicDiscussion">
+              <i class="el-icon-s-comment"></i>
+              {{ $t("m.NavBar_Discussion") }}
             </el-menu-item>
             <el-submenu index="rank">
               <template slot="title">
-                <i class="el-icon-s-data"></i>
-                {{ $t('m.NavBar_Rank') }}
+                <span @click="goRank()">
+                  <i class="el-icon-s-data"></i>
+                  {{ $t("m.NavBar_Rank") }}
+                </span>
               </template>
               <el-menu-item index="/acm-rank">
                 {{
-                $t('m.NavBar_ACM_Rank')
+                $t("m.NavBar_ACM_Rank")
                 }}
               </el-menu-item>
               <el-menu-item index="/oi-rank">
                 {{
-                $t('m.NavBar_OI_Rank')
-                }}
-              </el-menu-item>
-            </el-submenu>
-            <el-menu-item index="/discussion" v-if="websiteConfig.openPublicDiscussion">
-              <i class="el-icon-s-comment"></i>
-              {{ $t('m.NavBar_Discussion') }}
-            </el-menu-item>
-            <el-menu-item index="/group">
-              <i class="fa fa-users navbar-icon"></i>
-              {{ $t('m.NavBar_Group') }}
-            </el-menu-item>
-            <el-submenu index="about">
-              <template slot="title">
-                <i class="el-icon-info"></i>
-                {{ $t('m.NavBar_About') }}
-              </template>
-              <el-menu-item index="/introduction">
-                {{
-                $t('m.NavBar_Introduction')
-                }}
-              </el-menu-item>
-              <el-menu-item index="/developer">
-                {{
-                $t('m.NavBar_Developer')
+                $t("m.NavBar_OI_Rank")
                 }}
               </el-menu-item>
             </el-submenu>
@@ -88,239 +72,238 @@
           <template v-else-if="mode == 'training'">
             <el-menu-item index="/home">
               <i class="el-icon-s-home"></i>
-              {{ $t('m.NavBar_Back_Home') }}
+              {{ $t("m.NavBar_Back_Home") }}
             </el-menu-item>
             <template v-if="$route.params.groupID">
               <el-menu-item :index="'/group/' + $route.params.groupID">
                 <i class="fa fa-users navbar-icon"></i>
-                {{ $t('m.NavBar_Group_Home') }}
+                {{ $t("m.NavBar_Group_Home") }}
               </el-menu-item>
             </template>
             <el-menu-item :index="getTrainingHomePath()">
               <i class="el-icon-s-claim"></i>
-              {{ $t('m.NavBar_Training_Home') }}
+              {{ $t("m.NavBar_Training_Home") }}
             </el-menu-item>
             <el-menu-item :index="getTrainingProblemListPath()">
               <i class="fa fa-list navbar-icon"></i>
-              {{ $t('m.Problem_List') }}
+              {{ $t("m.Problem_List") }}
             </el-menu-item>
           </template>
           <template v-else-if="mode == 'contest'">
             <el-menu-item index="/home">
               <i class="el-icon-s-home"></i>
-              {{ $t('m.NavBar_Back_Home') }}
+              {{ $t("m.NavBar_Back_Home") }}
             </el-menu-item>
             <el-menu-item :index="'/contest/' + $route.params.contestID">
               <i class="el-icon-trophy"></i>
-              {{ $t('m.NavBar_Contest_Home') }}
+              {{ $t("m.NavBar_Contest_Home") }}
             </el-menu-item>
             <el-menu-item :index="'/contest/' + $route.params.contestID + '/problems'">
               <i class="fa fa-list navbar-icon"></i>
-              {{ $t('m.Problem_List') }}
+              {{ $t("m.Problem_List") }}
             </el-menu-item>
             <el-menu-item
-              :index="'/contest/' + $route.params.contestID + '/submissions?onlyMine=true'"
+              :index="
+                '/contest/' +
+                $route.params.contestID +
+                '/submissions?onlyMine=true'
+              "
             >
               <i class="el-icon-menu"></i>
-              {{ $t('m.NavBar_Contest_Own_Submission') }}
+              {{ $t("m.NavBar_Contest_Own_Submission") }}
             </el-menu-item>
             <el-menu-item :index="'/contest/' + $route.params.contestID + '/rank'">
               <i class="fa fa-bar-chart navbar-icon"></i>
-              {{ $t('m.NavBar_Contest_Rank') }}
+              {{ $t("m.NavBar_Contest_Rank") }}
             </el-menu-item>
           </template>
           <template v-else-if="mode == 'group'">
             <el-menu-item index="/home">
               <i class="el-icon-s-home"></i>
-              {{ $t('m.NavBar_Back_Home') }}
+              {{ $t("m.NavBar_Back_Home") }}
             </el-menu-item>
             <template v-if="$route.params.groupID">
               <el-menu-item :index="'/group/' + $route.params.groupID">
                 <i class="fa fa-users navbar-icon"></i>
-                {{ $t('m.NavBar_Group_Home') }}
+                {{ $t("m.NavBar_Group_Home") }}
               </el-menu-item>
             </template>
             <el-menu-item :index="'/group/' + $route.params.groupID + '/problem'">
               <i class="fa fa-list navbar-icon"></i>
-              {{ $t('m.Problem_List') }}
+              {{ $t("m.Problem_List") }}
             </el-menu-item>
           </template>
 
-          <template v-if="!isAuthenticated">
-            <div class="btn-menu">
-              <el-button
-                type="primary"
-                size="medium"
-                round
-                @click="handleBtnClick('Login')"
-              >{{ $t('m.NavBar_Login') }}</el-button>
-              <el-button
-                v-if="websiteConfig.register"
-                size="medium"
-                round
-                @click="handleBtnClick('Register')"
-                style="margin-left: 5px"
-              >{{ $t('m.NavBar_Register') }}</el-button>
-            </div>
-          </template>
-          <template v-else>
-            <el-dropdown
-              class="drop-menu"
-              @command="handleRoute"
-              placement="bottom"
-              trigger="hover"
-            >
-              <span class="el-dropdown-link">
-                {{ userInfo.username }}
-                <i class="el-icon-caret-bottom"></i>
-              </span>
+          <div style="margin-left: auto;">
+            <template v-if="!isAuthenticated">
+              <div class="btn-menu">
+                <el-button
+                  type="primary"
+                  size="medium"
+                  round
+                  @click="handleBtnClick('Login')"
+                >{{ $t("m.NavBar_Login") }}</el-button>
+                <el-button
+                  v-if="websiteConfig.register"
+                  size="medium"
+                  round
+                  @click="handleBtnClick('Register')"
+                  style="margin-left: 5px"
+                >{{ $t("m.NavBar_Register") }}</el-button>
+              </div>
+            </template>
+            <template v-else>
+              <el-dropdown
+                class="drop-menu"
+                @command="handleRoute"
+                placement="bottom"
+                trigger="hover"
+              >
+                <span class="el-dropdown-link" @click="goUserHome()">
+                  {{ userInfo.username }}
+                  <i class="el-icon-caret-bottom"></i>
+                </span>
 
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item command="/user-home">
-                  {{
-                  $t('m.NavBar_UserHome')
-                  }}
-                </el-dropdown-item>
-                <el-dropdown-item command="/status?onlyMine=true">
-                  {{
-                  $t('m.NavBar_Submissions')
-                  }}
-                </el-dropdown-item>
-                <el-dropdown-item command="/setting">
-                  {{
-                  $t('m.NavBar_Setting')
-                  }}
-                </el-dropdown-item>
-                <el-dropdown-item v-if="isAdminRole" command="/admin">
-                  {{
-                  $t('m.NavBar_Management')
-                  }}
-                </el-dropdown-item>
-                <el-dropdown-item divided command="/logout">
-                  {{
-                  $t('m.NavBar_Logout')
-                  }}
-                </el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
-            <avatar
-              :username="userInfo.username"
-              :inline="true"
-              :size="30"
-              color="#FFF"
-              :src="avatar"
-              class="drop-avatar"
-            ></avatar>
-            <el-dropdown class="drop-msg" @command="handleRoute" placement="bottom">
-              <span class="el-dropdown-link">
-                <i class="el-icon-message-solid"></i>
-                <svg
-                  v-if="
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item command="/user-home">
+                    {{
+                    $t("m.NavBar_UserHome")
+                    }}
+                  </el-dropdown-item>
+                  <el-dropdown-item command="/setting">
+                    {{
+                    $t("m.NavBar_Setting")
+                    }}
+                  </el-dropdown-item>
+                  <el-dropdown-item v-if="isAdminRole" command="/admin">
+                    {{
+                    $t("m.NavBar_Management")
+                    }}
+                  </el-dropdown-item>
+                  <div style="display: flex; justify-content: center; align-items: center;">
+                    <el-dropdown-item divided command="/logout">
+                      {{
+                      $t("m.NavBar_Logout")
+                      }}
+                    </el-dropdown-item>
+                  </div>
+                </el-dropdown-menu>
+              </el-dropdown>
+              <avatar
+                :username="userInfo.username"
+                :inline="true"
+                :size="30"
+                color="#FFF"
+                :src="avatar"
+                class="drop-avatar"
+              ></avatar>
+              <el-dropdown class="drop-msg" @command="handleRoute" placement="bottom">
+                <span class="el-dropdown-link">
+                  <i class="el-icon-message-solid"></i>
+                  <svg
+                    v-if="
                     unreadMessage.comment > 0 ||
-                      unreadMessage.reply > 0 ||
-                      unreadMessage.like > 0 ||
-                      unreadMessage.sys > 0 ||
-                      unreadMessage.mine > 0
+                    unreadMessage.reply > 0 ||
+                    unreadMessage.like > 0 ||
+                    unreadMessage.sys > 0 ||
+                    unreadMessage.mine > 0
                   "
-                  width="10"
-                  height="10"
-                  style="vertical-align: top;margin-left: -11px;margin-top: 3px;"
-                >
-                  <circle cx="5" cy="5" r="5" style="fill: red;" />
-                </svg>
-              </span>
+                    width="10"
+                    height="10"
+                    style="
+                    vertical-align: top;
+                    margin-left: -11px;
+                    margin-top: 3px;
+                  "
+                  >
+                    <circle cx="5" cy="5" r="5" style="fill: red" />
+                  </svg>
+                </span>
 
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item command="/message/discuss">
-                  <span>{{ $t('m.DiscussMsg') }}</span>
-                  <span class="drop-msg-count" v-if="unreadMessage.comment > 0">
-                    <MsgSvg :total="unreadMessage.comment"></MsgSvg>
-                  </span>
-                </el-dropdown-item>
-                <el-dropdown-item command="/message/reply">
-                  <span>{{ $t('m.ReplyMsg') }}</span>
-                  <span class="drop-msg-count" v-if="unreadMessage.reply > 0">
-                    <MsgSvg :total="unreadMessage.reply"></MsgSvg>
-                  </span>
-                </el-dropdown-item>
-                <el-dropdown-item command="/message/like">
-                  <span>{{ $t('m.LikeMsg') }}</span>
-                  <span class="drop-msg-count" v-if="unreadMessage.like > 0">
-                    <MsgSvg :total="unreadMessage.like"></MsgSvg>
-                  </span>
-                </el-dropdown-item>
-                <el-dropdown-item command="/message/sys">
-                  <span>{{ $t('m.SysMsg') }}</span>
-                  <span class="drop-msg-count" v-if="unreadMessage.sys > 0">
-                    <MsgSvg :total="unreadMessage.sys"></MsgSvg>
-                  </span>
-                </el-dropdown-item>
-                <el-dropdown-item command="/message/mine">
-                  <span>{{ $t('m.MineMsg') }}</span>
-                  <span class="drop-msg-count" v-if="unreadMessage.mine > 0">
-                    <MsgSvg :total="unreadMessage.mine"></MsgSvg>
-                  </span>
-                </el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
-          </template>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item command="/message/discuss">
+                    <span>{{ $t("m.DiscussMsg") }}</span>
+                    <span class="drop-msg-count" v-if="unreadMessage.comment > 0">
+                      <MsgSvg :total="unreadMessage.comment"></MsgSvg>
+                    </span>
+                  </el-dropdown-item>
+                  <el-dropdown-item command="/message/reply">
+                    <span>{{ $t("m.ReplyMsg") }}</span>
+                    <span class="drop-msg-count" v-if="unreadMessage.reply > 0">
+                      <MsgSvg :total="unreadMessage.reply"></MsgSvg>
+                    </span>
+                  </el-dropdown-item>
+                  <el-dropdown-item command="/message/like">
+                    <span>{{ $t("m.LikeMsg") }}</span>
+                    <span class="drop-msg-count" v-if="unreadMessage.like > 0">
+                      <MsgSvg :total="unreadMessage.like"></MsgSvg>
+                    </span>
+                  </el-dropdown-item>
+                  <el-dropdown-item command="/message/sys">
+                    <span>{{ $t("m.SysMsg") }}</span>
+                    <span class="drop-msg-count" v-if="unreadMessage.sys > 0">
+                      <MsgSvg :total="unreadMessage.sys"></MsgSvg>
+                    </span>
+                  </el-dropdown-item>
+                  <el-dropdown-item command="/message/mine">
+                    <span>{{ $t("m.MineMsg") }}</span>
+                    <span class="drop-msg-count" v-if="unreadMessage.mine > 0">
+                      <MsgSvg :total="unreadMessage.mine"></MsgSvg>
+                    </span>
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+            </template>
+          </div>
         </el-menu>
       </div>
-      <div id="header-hidden" v-show="isScrolled"></div>
+      <!-- <div id="header-hidden" v-show="isScrolled"></div> -->
     </template>
     <template v-else>
-      <div style="top:0px;left:0px;">
+      <div style="top: 0px; left: 0px">
         <mu-appbar class="mobile-nav" color="primary">
           <mu-button icon slot="left" @click="opendrawer = !opendrawer">
             <i class="el-icon-s-unfold"></i>
           </mu-button>
-          <el-tooltip
-            :content="$t('m.Click_To_Change_Web_Language')"
-            placement="bottom"
-            effect="dark"
-          >
-            <span @click="changeWebLanguage">
-              {{
-              websiteConfig.shortName ? websiteConfig.shortName : 'OJ'
-              }}
-            </span>
+          <el-tooltip :content="$t('m.Click_To_Home')" placement="bottom" effect="dark">
+            <router-link to="/home">{{ websiteConfig.shortName ? websiteConfig.shortName : "OJ" }}</router-link>
           </el-tooltip>
           <mu-button
             flat
             slot="right"
             @click="handleBtnClick('Login')"
             v-show="!isAuthenticated"
-          >{{ $t('m.NavBar_Login') }}</mu-button>
+          >{{ $t("m.NavBar_Login") }}</mu-button>
           <mu-button
             flat
             slot="right"
             @click="handleBtnClick('Register')"
             v-show="!isAuthenticated && websiteConfig.register"
-          >{{ $t('m.NavBar_Register') }}</mu-button>
+          >{{ $t("m.NavBar_Register") }}</mu-button>
 
           <mu-menu slot="right" v-show="isAuthenticated" :open.sync="openmsgmenu">
             <mu-button flat>
               <mu-icon value=":el-icon-message-solid" size="24"></mu-icon>
               <svg
                 v-if="
-                unreadMessage.comment > 0 ||
+                  unreadMessage.comment > 0 ||
                   unreadMessage.reply > 0 ||
                   unreadMessage.like > 0 ||
                   unreadMessage.sys > 0 ||
                   unreadMessage.mine > 0
-              "
+                "
                 width="10"
                 height="10"
-                style="margin-left: -11px;margin-top: -13px;"
+                style="margin-left: -11px; margin-top: -13px"
               >
-                <circle cx="5" cy="5" r="5" style="fill: red;" />
+                <circle cx="5" cy="5" r="5" style="fill: red" />
               </svg>
             </mu-button>
             <mu-list slot="content" @change="handleCommand">
               <mu-list-item button value="/message/discuss">
                 <mu-list-item-content>
                   <mu-list-item-title>
-                    {{ $t('m.DiscussMsg') }}
+                    {{ $t("m.DiscussMsg") }}
                     <span
                       class="drop-msg-count"
                       v-if="unreadMessage.comment > 0"
@@ -334,7 +317,7 @@
               <mu-list-item button value="/message/reply">
                 <mu-list-item-content>
                   <mu-list-item-title>
-                    {{ $t('m.ReplyMsg') }}
+                    {{ $t("m.ReplyMsg") }}
                     <span
                       class="drop-msg-count"
                       v-if="unreadMessage.reply > 0"
@@ -348,7 +331,7 @@
               <mu-list-item button value="/message/like">
                 <mu-list-item-content>
                   <mu-list-item-title>
-                    {{ $t('m.LikeMsg') }}
+                    {{ $t("m.LikeMsg") }}
                     <span class="drop-msg-count" v-if="unreadMessage.like > 0">
                       <MsgSvg :total="unreadMessage.like"></MsgSvg>
                     </span>
@@ -359,7 +342,7 @@
               <mu-list-item button value="/message/sys">
                 <mu-list-item-content>
                   <mu-list-item-title>
-                    {{ $t('m.SysMsg') }}
+                    {{ $t("m.SysMsg") }}
                     <span class="drop-msg-count" v-if="unreadMessage.sys > 0">
                       <MsgSvg :total="unreadMessage.sys"></MsgSvg>
                     </span>
@@ -371,7 +354,7 @@
               <mu-list-item button value="/message/mine">
                 <mu-list-item-content>
                   <mu-list-item-title>
-                    {{ $t('m.MineMsg') }}
+                    {{ $t("m.MineMsg") }}
                     <span class="drop-msg-count" v-if="unreadMessage.mine > 0">
                       <MsgSvg :total="unreadMessage.mine"></MsgSvg>
                     </span>
@@ -398,17 +381,7 @@
                 <mu-list-item-content>
                   <mu-list-item-title>
                     {{
-                    $t('m.NavBar_UserHome')
-                    }}
-                  </mu-list-item-title>
-                </mu-list-item-content>
-              </mu-list-item>
-              <mu-divider></mu-divider>
-              <mu-list-item button value="/status?onlyMine=true">
-                <mu-list-item-content>
-                  <mu-list-item-title>
-                    {{
-                    $t('m.NavBar_Submissions')
+                    $t("m.NavBar_UserHome")
                     }}
                   </mu-list-item-title>
                 </mu-list-item-content>
@@ -418,7 +391,7 @@
                 <mu-list-item-content>
                   <mu-list-item-title>
                     {{
-                    $t('m.NavBar_Setting')
+                    $t("m.NavBar_Setting")
                     }}
                   </mu-list-item-title>
                 </mu-list-item-content>
@@ -428,7 +401,7 @@
                 <mu-list-item-content>
                   <mu-list-item-title>
                     {{
-                    $t('m.NavBar_Management')
+                    $t("m.NavBar_Management")
                     }}
                   </mu-list-item-title>
                 </mu-list-item-content>
@@ -439,7 +412,7 @@
                 <mu-list-item-content>
                   <mu-list-item-title>
                     {{
-                    $t('m.NavBar_Logout')
+                    $t("m.NavBar_Logout")
                     }}
                   </mu-list-item-title>
                 </mu-list-item-content>
@@ -448,7 +421,7 @@
           </mu-menu>
         </mu-appbar>
 
-        <mu-appbar style="width: 100%;">
+        <mu-appbar style="width: 100%">
           <!--占位，刚好占领导航栏的高度-->
         </mu-appbar>
 
@@ -463,7 +436,22 @@
               <mu-list-item-action>
                 <mu-icon value=":el-icon-s-home" size="24"></mu-icon>
               </mu-list-item-action>
-              <mu-list-item-title>{{ $t('m.NavBar_Home') }}</mu-list-item-title>
+              <mu-list-item-title>{{ $t("m.NavBar_Home") }}</mu-list-item-title>
+            </mu-list-item>
+            <mu-list-item
+              button
+              to="/announcement"
+              @click="opendrawer = !opendrawer"
+              active-class="mobile-menu-active"
+            >
+              <mu-list-item-action>
+                <mu-icon value=":el-icon-s-flag" size="24"></mu-icon>
+              </mu-list-item-action>
+              <mu-list-item-title>
+                {{
+                $t("m.Announcement")
+                }}
+              </mu-list-item-title>
             </mu-list-item>
 
             <mu-list-item
@@ -477,11 +465,10 @@
               </mu-list-item-action>
               <mu-list-item-title>
                 {{
-                $t('m.NavBar_Problem')
+                $t("m.NavBar_Problem")
                 }}
               </mu-list-item-title>
             </mu-list-item>
-
             <mu-list-item
               button
               to="/training"
@@ -493,7 +480,7 @@
               </mu-list-item-action>
               <mu-list-item-title>
                 {{
-                $t('m.NavBar_Training')
+                $t("m.NavBar_Training")
                 }}
               </mu-list-item-title>
             </mu-list-item>
@@ -509,7 +496,7 @@
               </mu-list-item-action>
               <mu-list-item-title>
                 {{
-                $t('m.NavBar_Contest')
+                $t("m.NavBar_Contest")
                 }}
               </mu-list-item-title>
             </mu-list-item>
@@ -523,7 +510,11 @@
               <mu-list-item-action>
                 <mu-icon value=":el-icon-s-marketing" size="24"></mu-icon>
               </mu-list-item-action>
-              <mu-list-item-title>{{ $t('m.NavBar_Status') }}</mu-list-item-title>
+              <mu-list-item-title>
+                {{
+                $t("m.NavBar_Status")
+                }}
+              </mu-list-item-title>
             </mu-list-item>
 
             <mu-list-item
@@ -536,7 +527,7 @@
               <mu-list-item-action>
                 <mu-icon value=":el-icon-s-data" size="24"></mu-icon>
               </mu-list-item-action>
-              <mu-list-item-title>{{ $t('m.NavBar_Rank') }}</mu-list-item-title>
+              <mu-list-item-title>{{ $t("m.NavBar_Rank") }}</mu-list-item-title>
               <mu-list-item-action>
                 <mu-icon class="toggle-icon" size="24" value=":el-icon-arrow-down"></mu-icon>
               </mu-list-item-action>
@@ -550,7 +541,7 @@
               >
                 <mu-list-item-title>
                   {{
-                  $t('m.NavBar_ACM_Rank')
+                  $t("m.NavBar_ACM_Rank")
                   }}
                 </mu-list-item-title>
               </mu-list-item>
@@ -564,7 +555,7 @@
               >
                 <mu-list-item-title>
                   {{
-                  $t('m.NavBar_OI_Rank')
+                  $t("m.NavBar_OI_Rank")
                   }}
                 </mu-list-item-title>
               </mu-list-item>
@@ -582,7 +573,7 @@
               </mu-list-item-action>
               <mu-list-item-title>
                 {{
-                $t('m.NavBar_Discussion')
+                $t("m.NavBar_Discussion")
                 }}
               </mu-list-item-title>
             </mu-list-item>
@@ -596,7 +587,11 @@
               <mu-list-item-action>
                 <mu-icon value=":fa fa-users" size="24"></mu-icon>
               </mu-list-item-action>
-              <mu-list-item-title>{{ $t('m.NavBar_Group') }}</mu-list-item-title>
+              <mu-list-item-title>
+                {{
+                $t("m.NavBar_Group")
+                }}
+              </mu-list-item-title>
             </mu-list-item>
 
             <mu-list-item
@@ -609,7 +604,11 @@
               <mu-list-item-action>
                 <mu-icon value=":el-icon-info" size="24"></mu-icon>
               </mu-list-item-action>
-              <mu-list-item-title>{{ $t('m.NavBar_About') }}</mu-list-item-title>
+              <mu-list-item-title>
+                {{
+                $t("m.NavBar_About")
+                }}
+              </mu-list-item-title>
               <mu-list-item-action>
                 <mu-icon class="toggle-icon" size="24" value=":el-icon-arrow-down"></mu-icon>
               </mu-list-item-action>
@@ -623,7 +622,7 @@
               >
                 <mu-list-item-title>
                   {{
-                  $t('m.NavBar_Introduction')
+                  $t("m.NavBar_Introduction")
                   }}
                 </mu-list-item-title>
               </mu-list-item>
@@ -637,7 +636,7 @@
               >
                 <mu-list-item-title>
                   {{
-                  $t('m.NavBar_Developer')
+                  $t("m.NavBar_Developer")
                   }}
                 </mu-list-item-title>
               </mu-list-item>
@@ -704,6 +703,7 @@ export default {
       openusermenu: false,
       openmsgmenu: false,
       openSideMenu: "",
+      big_imgUrl: require("@/assets/nyoj-logo.png"),
       imgUrl: require("@/assets/logo.png"),
       avatarStyle:
         "display: inline-flex;width: 30px;height: 30px;border-radius: 50%;align-items: center;justify-content: center;text-align: center;user-select: none;",
@@ -818,6 +818,16 @@ export default {
         return `/training/${tid}/problems`;
       }
     },
+    goUserHome() {
+      this.$router.push({
+        path: "/user-home",
+      });
+    },
+    goRank() {
+      this.$router.push({
+        name: "ACM Rank",
+      });
+    },
   },
   computed: {
     ...mapGetters([
@@ -885,16 +895,40 @@ export default {
 };
 </script>
 <style scoped>
-#header {
-  min-width: 300px;
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: auto;
-  width: 100%;
-  z-index: 2000;
-  background-color: #fff;
-  box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.1);
+@media screen and (min-width: 1050px) {
+  #header {
+    min-width: 300px;
+    /* position: fixed; */
+    top: 0;
+    left: 0;
+    height: auto;
+    width: 80%;
+    margin: 0 auto;
+    z-index: 2000;
+    /* background-color: #fff; */
+    box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.1);
+  }
+}
+
+@media screen and (max-width: 1050px) {
+  #header {
+    min-width: 300px;
+    top: 0;
+    left: 0;
+    height: auto;
+    width: 100%;
+    margin: 0 auto;
+    z-index: 2000;
+    box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.1);
+  }
+}
+.custom-menu .el-menu-item {
+  width: auto;
+  text-align: center;
+}
+
+.custom-menu .spacer {
+  visibility: hidden;
 }
 .mobile-nav {
   position: fixed;
@@ -911,8 +945,8 @@ export default {
   bottom: 0px;
   z-index: 1000;
   width: 100%;
-  box-shadow: 00px 0px 00px rgb(255, 255, 255), 0px 0px 10px rgb(255, 255, 255),
-    0px 0px 0px rgb(255, 255, 255), 1px 1px 0px rgb(218, 218, 218);
+  /* box-shadow: 00px 0px 00px rgb(255, 255, 255), 0px 0px 10px rgb(255, 255, 255),
+    0px 0px 0px rgb(255, 255, 255), 1px 1px 0px rgb(218, 218, 218); */
 }
 
 .logo {
@@ -974,7 +1008,7 @@ export default {
   color: #4e4e4e;
 }
 .el-submenu__title i {
-  color: #495060 !important;
+  color: white !important;
 }
 .el-menu-item {
   padding: 0 13px;

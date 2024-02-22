@@ -1,5 +1,9 @@
 <template>
   <div :class="bodyClass">
+    <!-- 滚动公告 -->
+    <div v-if="showProblemHorizontalMenu">
+      <Announcement></Announcement>
+    </div>
     <div id="problem-main">
       <!--problem main-->
       <el-row class="problem-box" :id="'problem-box' + '-' + $route.name">
@@ -770,6 +774,7 @@ import ProblemHorizontalMenu from "@/components/oj/common/ProblemHorizontalMenu"
 import Markdown from "@/components/oj/common/Markdown";
 // 只显示这些状态的图形占用
 const filtedStatus = ["wa", "ce", "ac", "pa", "tle", "mle", "re", "pe"];
+const Announcement = () => import("@/views/oj/about/Switch_Announcement.vue");
 
 export default {
   name: "ProblemDetails",
@@ -778,6 +783,7 @@ export default {
     Pagination,
     ProblemHorizontalMenu,
     Markdown,
+    Announcement,
   },
   data() {
     return {

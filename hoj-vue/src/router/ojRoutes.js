@@ -65,6 +65,12 @@ const ojRoutes = [
     meta: { title: 'Problem' },
   },
   {
+    path: '/announcement/:announcementID?',
+    name: 'Announcements',
+    component: Announcements,
+    meta: { title: 'Announcements' },
+  },
+  {
     path: '/problem/:problemID',
     name: 'ProblemDetails',
     component: Problem,
@@ -176,7 +182,7 @@ const ojRoutes = [
       },
       {
         name: 'ContestAnnouncementList',
-        path: 'announcements',
+        path: 'announcement/:announcementID?',
         component: Announcements,
         meta: { title: 'Contest Announcement' },
       },

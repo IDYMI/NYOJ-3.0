@@ -182,11 +182,8 @@ const ojApi = {
   getRecentOtherContests() {
     return ajax('/api/get-recent-other-contest', 'get', {});
   },
-  getAnnouncementList(currentPage, limit) {
-    let params = {
-      currentPage: currentPage,
-      limit: limit,
-    };
+  getAnnouncementList(currentPage, limit, id) {
+    let params = { currentPage, limit, id };
     return ajax('/api/get-common-announcement', 'get', {
       params,
     });
@@ -582,12 +579,8 @@ const ojApi = {
   },
 
   // 获取比赛公告列表
-  getContestAnnouncementList(currentPage, limit, cid) {
-    let params = {
-      currentPage,
-      limit,
-      cid,
-    };
+  getContestAnnouncementList(currentPage, limit, cid, id) {
+    let params = { currentPage, limit, cid, id };
     return ajax('/api/get-contest-announcement', 'get', {
       params,
     });
@@ -1460,6 +1453,15 @@ const adminApi = {
     });
   },
 
+  admin_editHomeCarousel(id, addLink, addHint) {
+    return ajax('/api/admin/config/home-carousel', 'post', {
+      params: {
+        id,
+        addLink,
+        addHint,
+      },
+    });
+  },
   admin_testSMTPConfig(email) {
     return ajax('/api/admin/config/test-email', 'post', {
       data: {

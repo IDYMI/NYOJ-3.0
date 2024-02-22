@@ -20,8 +20,9 @@ import top.hcode.hoj.pojo.vo.AnnouncementVO;
 @Mapper
 @Repository
 public interface AnnouncementMapper extends BaseMapper<Announcement> {
-    IPage<AnnouncementVO> getAnnouncementList(Page<AnnouncementVO> page, @Param("notAdmin") Boolean notAdmin);
+    IPage<AnnouncementVO> getAnnouncementList(Page<AnnouncementVO> page, @Param("notAdmin") Boolean notAdmin,
+            @Param("id") Long id);
 
     IPage<AnnouncementVO> getContestAnnouncement(Page<AnnouncementVO> page, @Param("cid") Long cid,
-            @Param("notAdmin") Boolean notAdmin);
+            @Param("notAdmin") Boolean notAdmin, @Param("id") Long id);
 }

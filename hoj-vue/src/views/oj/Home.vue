@@ -1,5 +1,6 @@
 <template>
   <div>
+    <Announcement></Announcement>
     <el-row :gutter="20">
       <el-col :md="15" :sm="24">
         <el-card>
@@ -286,10 +287,13 @@ import myMessage from "@/common/message";
 const Announcements = () => import("@/components/oj/common/Announcements.vue");
 const SubmissionStatistic = () =>
   import("@/components/oj/home/SubmissionStatistic.vue");
+const Announcement = () => import("@/views/oj/about/Switch_Announcement.vue");
+
 export default {
   name: "home",
   components: {
     Announcements,
+    Announcement,
     SubmissionStatistic,
     Avatar,
   },

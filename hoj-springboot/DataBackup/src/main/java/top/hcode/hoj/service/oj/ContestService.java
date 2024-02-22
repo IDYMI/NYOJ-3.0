@@ -40,7 +40,8 @@ public interface ContestService {
 
     public CommonResult<IPage> getContestRank(ContestRankDTO contestRankDto);
 
-    public CommonResult<IPage<AnnouncementVO>> getContestAnnouncement(Long cid, Integer limit, Integer currentPage);
+    public CommonResult<IPage<AnnouncementVO>> getContestAnnouncement(Long cid, Integer limit, Integer currentPage,
+            Long id);
 
     public CommonResult<List<Announcement>> getContestUserNotReadAnnouncement(
             UserReadContestAnnouncementDTO userReadContestAnnouncementDto);

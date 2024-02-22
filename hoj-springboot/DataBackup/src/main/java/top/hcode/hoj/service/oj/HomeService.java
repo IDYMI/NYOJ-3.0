@@ -24,7 +24,7 @@ public interface HomeService {
     @Deprecated
     public CommonResult<List<HashMap<String, Object>>> getRecentOtherContest();
 
-    public CommonResult<IPage<AnnouncementVO>> getCommonAnnouncement(Integer limit, Integer currentPage);
+    public CommonResult<IPage<AnnouncementVO>> getCommonAnnouncement(Integer limit, Integer currentPage, Long id);
 
     public CommonResult<Map<Object, Object>> getWebConfig();
 

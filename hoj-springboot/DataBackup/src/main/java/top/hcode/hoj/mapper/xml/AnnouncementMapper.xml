@@ -8,14 +8,21 @@
         <if test="notAdmin">
             and a.status = 0
         </if>
+        <if test="id">
+            and a.id = #{id}
+        </if>
         order by a.gmt_create desc
     </select>
+
 
     <select id="getContestAnnouncement"  resultMap="map_AnnouncementVo">
         SELECT a.*,u.username FROM user_info u,announcement a,contest_announcement ca
         where a.uid = u.uuid and ca.cid =#{cid} and ca.aid = a.id
         <if test="notAdmin">
             and a.status = 0
+        </if>
+        <if test="id">
+            and a.id = #{id}
         </if>
         order by a.gmt_create desc
     </select>

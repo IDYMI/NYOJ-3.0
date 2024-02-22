@@ -111,6 +111,7 @@
         </el-card>
       </el-col>
     </el-row>
+    <Announcement></Announcement>
     <div class="sub-menu">
       <!-- 判断是否需要密码验证 -->
 
@@ -310,10 +311,13 @@ import {
 import myMessage from "@/common/message";
 import storage from "@/common/storage";
 import Markdown from "@/components/oj/common/Markdown";
+const Announcement = () => import("@/views/oj/about/Switch_Announcement.vue");
+
 export default {
   name: "ContestDetails",
   components: {
     Markdown,
+    Announcement,
   },
   data() {
     return {
