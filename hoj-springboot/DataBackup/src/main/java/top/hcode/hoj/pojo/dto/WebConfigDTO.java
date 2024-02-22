@@ -1,5 +1,10 @@
 package top.hcode.hoj.pojo.dto;
 
+import com.alibaba.excel.util.CollectionUtils;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
 import lombok.*;
 import lombok.experimental.Accessors;
 
@@ -59,4 +64,25 @@ public class WebConfigDTO {
      * 项目地址
      */
     private String projectUrl;
+
+    /**
+     * 友校链接
+     */
+    private List<RelatedLinkDTO> related;
+
+    public void setRelatedByList(List<Map<String, String>> relatedList) {
+        if (CollectionUtils.isEmpty(relatedList)) {
+            return;
+        }
+
+        related = relatedList.stream()
+                .map(map -> {
+                    RelatedLinkDTO relatedLinkDTO = new RelatedLinkDTO();
+                    relatedLinkDTO.setLink(map.get("link"));
+                    relatedLinkDTO.setTitle(map.get("title"));
+                    relatedLinkDTO.setIconClass(map.get("iconClass"));
+                    return relatedLinkDTO;
+                })
+                .collect(Collectors.toList());
+    }
 }

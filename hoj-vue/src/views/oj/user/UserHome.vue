@@ -1,5 +1,5 @@
 <template>
-  <div class="container" v-loading="loading">
+  <div class="home-container" v-loading="loading">
     <div class="avatar-container">
       <avatar
         :username="profile.username"
@@ -9,7 +9,7 @@
         :src="profile.avatar"
       ></avatar>
     </div>
-    <el-card>
+    <el-card class="box-card">
       <div class="recent-login">
         <el-tooltip :content="profile.recentLoginTime | localtime" placement="top">
           <el-tag type="success" effect="plain" size="medium">
@@ -351,7 +351,6 @@ export default {
       }
     },
     "$store.state.language"(newVal, oldVal) {
-      console.log(newVal, oldVal);
       this.calendarHeatLocale = {
         months: [
           this.$i18n.t("m.Jan"),
@@ -414,63 +413,69 @@ export default {
   font-size: 20px;
   font-weight: 600;
 }
-
-.container p {
+.home-container {
+  width: 100%;
+  text-align: center;
+  box-sizing: border-box;
+  border: 1px solid #ebeef5;
+}
+.home-container p {
   margin-top: 8px;
   margin-bottom: 8px;
 }
 
 @media screen and (max-width: 1080px) {
-  .container {
+  .home-container {
     position: relative;
     width: 100%;
-    margin-top: 110px;
+    margin-top: 80px;
     text-align: center;
   }
-  .container .avatar-container {
+  .home-container .avatar-container {
     position: absolute;
     left: 50%;
     transform: translate(-50%);
     z-index: 1;
-    margin-top: -90px;
+    margin-top: -85px;
   }
-  .container .recent-login {
+
+  .home-container .recent-login {
     text-align: center;
     margin-top: 30px;
   }
 }
 
 @media screen and (min-width: 1080px) {
-  .container {
+  .home-container {
     position: relative;
-    width: 75%;
-    margin-top: 160px;
+    width: 100%;
+    margin-top: 100px;
     text-align: center;
   }
-  .container .avatar-container {
+  .home-container .avatar-container {
     position: absolute;
     left: 50%;
     transform: translate(-50%);
     z-index: 1;
-    margin-top: -8%;
+    margin-top: -7%;
   }
-  .container .recent-login {
+  .home-container .recent-login {
     position: absolute;
     right: 1rem;
     top: 0.5rem;
   }
-  .container .user-info {
+  .home-container .user-info {
     margin-top: 50px;
   }
 }
-.container .avatar {
+.home-container .avatar {
   width: 140px;
   height: 140px;
   border-radius: 50%;
   box-shadow: 0 1px 1px 0;
 }
 
-.container .emphasis {
+.home-container .emphasis {
   font-size: 20px;
   font-weight: 600;
 }

@@ -1,102 +1,100 @@
 <template>
   <div>
-    <div class="container" v-loading="loading">
-      <div class="title-article" style="text-align: left">
-        <h1 class="title" id="sharetitle">
-          <span>{{ discussion.title }}</span>
-          <el-button
-            type="primary"
-            size="mini"
-            style="margin-left:5px;vertical-align:middle;"
-            v-if="discussion.pid"
-            @click="toProblem(discussion.pid)"
-          >{{ $t('m.Go_to_problem') }}</el-button>
-        </h1>
-        <div class="title-msg">
-          <span>
-            <a
-              class="c999"
-              @click="getInfoByUsername(discussion.uid, discussion.author)"
-              :title="discussion.author"
-            >
-              <avatar
-                :username="discussion.author"
-                :inline="true"
-                :size="26"
-                color="#FFF"
-                class="user-avatar"
-                :src="discussion.avatar"
-              ></avatar>
-              <span class="user-name">{{ discussion.author }}</span>
-            </a>
-            <span v-if="discussion.titleName">
-              <el-tag
-                effect="dark"
-                size="small"
-                :color="discussion.titleColor"
-              >{{ discussion.titleName }}</el-tag>
-            </span>
-          </span>
-          <span
-            class="role-root role"
-            title="Super Administrator"
-            v-if="discussion.role == 'root'"
-          >SPA</span>
-          <span class="role-admin role" title="Administrator" v-if="discussion.role == 'admin'">ADM</span>
-          <span class="c999" style="padding:0 6px;">
-            <i class="el-icon-folder-opened">{{ $t('m.Category') }}：</i>
-            <a
-              class="c999"
-              @click="toAllDiscussionByCid(discussion.categoryId)"
-            >{{ discussion.categoryName }}</a>
-          </span>
-          <span class="c999">
-            <i class="fa fa-thumbs-o-up"></i>
-            <span>{{ $t('m.Likes') }}：{{ discussion.likeNum }}</span>
-          </span>
-          <span class="c999">
-            <i class="fa fa-eye"></i>
-            <span>{{ $t('m.Views') }}：{{ discussion.viewNum }}</span>
-          </span>
-
-          <a @click="showReportDialog = true" class="report" :title="$t('m.Report')">
-            <i class="fa fa-envira"></i>
-            <span>{{ $t('m.Report') }}</span>
-          </a>
+    <div class="title-article" style="text-align: left" v-loading="loading">
+      <h1 class="title" id="sharetitle">
+        <span>{{ discussion.title }}</span>
+        <el-button
+          type="primary"
+          size="mini"
+          style="margin-left:5px;vertical-align:middle;"
+          v-if="discussion.pid"
+          @click="toProblem(discussion.pid)"
+        >{{ $t('m.Go_to_problem') }}</el-button>
+      </h1>
+      <div class="title-msg">
+        <span>
           <a
-            @click="toLikeDiscussion(discussion.id, true)"
-            class="like"
-            :title="$t('m.Like')"
-            v-if="!discussion.hasLike"
+            class="c999"
+            @click="getInfoByUsername(discussion.uid, discussion.author)"
+            :title="discussion.author"
           >
-            <i class="fa fa-thumbs-o-up"></i>
-            <span>{{ $t('m.Like') }}</span>
+            <avatar
+              :username="discussion.author"
+              :inline="true"
+              :size="26"
+              color="#FFF"
+              class="user-avatar"
+              :src="discussion.avatar"
+            ></avatar>
+            <span class="user-name">{{ discussion.author }}</span>
           </a>
+          <span v-if="discussion.titleName">
+            <el-tag
+              effect="dark"
+              size="small"
+              :color="discussion.titleColor"
+            >{{ discussion.titleName }}</el-tag>
+          </span>
+        </span>
+        <span
+          class="role-root role"
+          title="Super Administrator"
+          v-if="discussion.role == 'root'"
+        >SPA</span>
+        <span class="role-admin role" title="Administrator" v-if="discussion.role == 'admin'">ADM</span>
+        <span class="c999" style="padding:0 6px;">
+          <i class="el-icon-folder-opened">{{ $t('m.Category') }}：</i>
           <a
-            @click="toLikeDiscussion(discussion.id, false)"
-            class="like"
-            :title="$t('m.Liked')"
-            v-else
-          >
-            <i class="fa fa-thumbs-up"></i>
-            <span>{{ $t('m.Liked') }}</span>
-          </a>
+            class="c999"
+            @click="toAllDiscussionByCid(discussion.categoryId)"
+          >{{ discussion.categoryName }}</a>
+        </span>
+        <span class="c999">
+          <i class="fa fa-thumbs-o-up"></i>
+          <span>{{ $t('m.Likes') }}：{{ discussion.likeNum }}</span>
+        </span>
+        <span class="c999">
+          <i class="fa fa-eye"></i>
+          <span>{{ $t('m.Views') }}：{{ discussion.viewNum }}</span>
+        </span>
 
+        <a @click="showReportDialog = true" class="report" :title="$t('m.Report')">
+          <i class="fa fa-envira"></i>
+          <span>{{ $t('m.Report') }}</span>
+        </a>
+        <a
+          @click="toLikeDiscussion(discussion.id, true)"
+          class="like"
+          :title="$t('m.Like')"
+          v-if="!discussion.hasLike"
+        >
+          <i class="fa fa-thumbs-o-up"></i>
+          <span>{{ $t('m.Like') }}</span>
+        </a>
+        <a
+          @click="toLikeDiscussion(discussion.id, false)"
+          class="like"
+          :title="$t('m.Liked')"
+          v-else
+        >
+          <i class="fa fa-thumbs-up"></i>
+          <span>{{ $t('m.Liked') }}</span>
+        </a>
+
+        <span>
+          <i class="fa fa-clock-o">{{ $t('m.Release_Time') }}：</i>
           <span>
-            <i class="fa fa-clock-o">{{ $t('m.Release_Time') }}：</i>
-            <span>
-              <el-tooltip :content="discussion.gmtCreate | localtime" placement="top">
-                <span>{{ discussion.gmtCreate | fromNow }}</span>
-              </el-tooltip>
-            </span>
+            <el-tooltip :content="discussion.gmtCreate | localtime" placement="top">
+              <span>{{ discussion.gmtCreate | fromNow }}</span>
+            </el-tooltip>
           </span>
+        </span>
 
-          <span style="padding:0 6px;" v-show="userInfo.uid == discussion.uid">
-            <a style="color:#8fb0c9" @click="showEditDiscussionDialog = true">
-              <i class="el-icon-edit-outline">{{ $t('m.Edit') }}</i>
-            </a>
-          </span>
-        </div>
+        <span style="padding:0 6px;" v-show="userInfo.uid == discussion.uid">
+          <a style="color:#8fb0c9" @click="showEditDiscussionDialog = true">
+            <i class="el-icon-edit-outline">{{ $t('m.Edit') }}</i>
+          </a>
+        </span>
       </div>
       <div class="body-article">
         <Markdown
@@ -211,7 +209,7 @@ export default {
   data() {
     return {
       discussion: {
-        author: "HOJ",
+        author: "NYOJ",
         avatar: "",
       },
       query: {
@@ -368,6 +366,10 @@ export default {
   padding: 10px 20px;
   position: relative;
   text-align: center;
+  box-sizing: border-box;
+  box-shadow: 0 2px 12px 0 rgb(0 0 0 / 10%);
+  border: 1px solid #ebeef5;
+  margin-bottom: 20px;
 }
 .title-article h1.title {
   font-size: 25px;

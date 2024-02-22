@@ -197,7 +197,8 @@ export const m = {
   Development: '开发',
   Open_Source: '开源',
   Support: '支持',
-  Help: '帮助',
+  Related_Link: '友链',
+  Help: '声明',
   Group: 'Q群',
 
   // /views/oj/Home.vue

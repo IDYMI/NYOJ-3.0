@@ -14,19 +14,48 @@
             :interval="interval"
             :height="srcHight"
             class="img-carousel"
-            arrow="always"
-            indicator-position="outside"
+            ref="carousel"
+            align="center"
+            style="background-color: #fff"
           >
-            <el-carousel-item v-for="(item, index) in carouselImgList" :key="index">
-              <el-image :src="item.url" fit="fill">
-                <div slot="error" class="image-slot">
-                  <i class="el-icon-picture-outline"></i>
-                </div>
-              </el-image>
+            <el-carousel-item v-for="item in carouselImgList" :key="item.url">
+              <div v-if="item.hint">
+                <el-tooltip content="Bottom Center 提示文字" placement="bottom" effect="light">
+                  <div
+                    slot="content"
+                    style="
+                      text-align: center;
+                      min-width: 180px;
+                      font-size: 15px;
+                    "
+                  >{{ item.hint }}</div>
+                  <el-image
+                    fit="contain"
+                    :src="item.url"
+                    :alt="item.url"
+                    :style="{
+                      cursor: isActive(item) && item.link ? 'pointer' : 'auto',
+                    }"
+                    @click="linkTo"
+                    class="normal-image"
+                  ></el-image>
+                </el-tooltip>
+              </div>
+              <div v-else>
+                <el-image
+                  fit="contain"
+                  :src="item.url"
+                  :alt="item.url"
+                  :style="{
+                    cursor: isActive(item) && item.link ? 'pointer' : 'auto',
+                  }"
+                  @click="linkTo"
+                  class="normal-image"
+                ></el-image>
+              </div>
             </el-carousel-item>
           </el-carousel>
         </el-card>
-        <Announcements class="card-top"></Announcements>
         <SubmissionStatistic class="card-top"></SubmissionStatistic>
         <el-card class="card-top">
           <div slot="header" class="clearfix">
@@ -318,7 +347,7 @@ export default {
           url: "https://z1.ax1x.com/2023/12/09/pi201Bj.jpg",
         },
       ],
-      srcHight: "440px",
+      srcHight: "340px",
       remoteJudgeList: [
         {
           url: "http://acm.hdu.edu.cn",
@@ -370,7 +399,7 @@ export default {
     if (screenWidth < 768) {
       this.srcHight = "200px";
     } else {
-      this.srcHight = "440px";
+      this.srcHight = "340px";
     }
     this.CONTEST_STATUS_REVERSE = Object.assign({}, CONTEST_STATUS_REVERSE);
     this.CONTEST_TYPE_REVERSE = Object.assign({}, CONTEST_TYPE_REVERSE);
@@ -380,6 +409,23 @@ export default {
     this.getRecentUpdatedProblemList();
   },
   methods: {
+    linkTo() {
+      const activeIndex = this.$refs.carousel.activeIndex;
+      if (activeIndex !== undefined && this.carouselImgList[activeIndex].link) {
+        window.open(this.carouselImgList[activeIndex].link, "_blank");
+      }
+    },
+
+    isActive(item) {
+      const activeIndex =
+        this.$refs.carousel && this.$refs.carousel.activeIndex;
+      return (
+        activeIndex !== undefined &&
+        this.carouselImgList[activeIndex] &&
+        this.carouselImgList[activeIndex].url !== undefined
+      );
+    },
+
     getHomeCarousel() {
       api.getHomeCarousel().then((res) => {
         if (res.data.data != null && res.data.data.length > 0) {
@@ -479,6 +525,17 @@ export default {
 }
 </style>
 <style scoped>
+.preview-image,
+.normal-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 图片等比缩放以填充整个容器 */
+  object-position: center; /* 图片在容器中的位置，这里设置为居中 */
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
 /deep/.el-card__header {
   padding: 0.6rem 1.25rem !important;
 }
@@ -577,7 +634,7 @@ li {
   float: right;
 }
 .img-carousel {
-  height: 490px;
+  height: 390px;
 }
 
 @media screen and (max-width: 768px) {

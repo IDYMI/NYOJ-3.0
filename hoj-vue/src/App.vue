@@ -1,99 +1,109 @@
 <template>
-  <div id="app">
-    <el-backtop :right="10"></el-backtop>
-    <div v-if="!isAdminView" class="full-height flex-column">
-      <NavBar></NavBar>
-      <div id="oj-content">
-        <transition name="el-zoom-in-bottom">
-          <router-view></router-view>
-        </transition>
+  <div class="main">
+    <div id="app">
+      <!-- 添加返回上下功能键 -->
+      <Back id="back"></Back>
+      <div v-if="!isAdminView" class="full-height flex-column">
+        <NavBar></NavBar>
+        <div id="oj-content">
+          <transition name="el-zoom-in-bottom">
+            <router-view></router-view>
+          </transition>
+        </div>
+        <footer v-if="showFooter" class="fix-to-bottom">
+          <div class="mundb-footer">
+            <el-row>
+              <el-col :md="6" :xs="24">
+                <h1>{{ websiteConfig.name }}</h1>
+                <span
+                  style="line-height: 25px"
+                  v-html="websiteConfig.description"
+                  v-katex
+                  v-highlight
+                ></span>
+              </el-col>
+              <el-col class="hr-none">
+                <el-divider></el-divider>
+              </el-col>
+              <el-col :md="6" :xs="24">
+                <h1>{{ $t("m.Service") }}</h1>
+                <p>
+                  <a @click="goRoute('/status')">{{ $t("m.Judging_Queue") }}</a>
+                </p>
+                <p>
+                  <a @click="goRoute('/developer')">
+                    {{
+                    $t("m.System_Info")
+                    }}
+                  </a>
+                </p>
+              </el-col>
+              <el-col class="hr-none">
+                <el-divider></el-divider>
+              </el-col>
+              <el-col :md="6" :xs="24">
+                <h1>{{ $t("m.Support") }}</h1>
+                <p>
+                  <i class="fa fa-info-circle" aria-hidden="true"></i>
+                  <a href="/discussion-detail/28" target="_blank">{{ $t("m.Help") }}</a>
+                </p>
+                <p>
+                  <i class="el-icon-document"></i>
+                  <a @click="goRoute('/introduction')">{{ $t("m.NavBar_About") }}</a>
+                </p>
+              </el-col>
+              <el-col class="hr-none">
+                <el-divider></el-divider>
+              </el-col>
+              <el-col :md="6" :xs="24">
+                <h1>{{ $t("m.Related_Link") }}</h1>
+                <div style="overflow-y: auto; max-height: 80px;">
+                  <template v-for="related in websiteConfig.related">
+                    <p :key="related.link" v-show="related.link">
+                      <i v-if="related.iconClass" :class="related.iconClass"></i>
+                      <a :href="related.link" target="_blank">{{ related.title }}</a>
+                    </p>
+                  </template>
+                </div>
+              </el-col>
+            </el-row>
+          </div>
+          <div class="mundb-footer">
+            <a
+              style="color:#1E9FFF"
+              :href="websiteConfig.recordUrl"
+              target="_blank"
+            >{{ websiteConfig.recordName }}</a>
+            Powered by
+            <a
+              :href="websiteConfig.projectUrl"
+              style="color:#1E9FFF"
+              target="_blank"
+            >{{ websiteConfig.projectName }}</a>
+            <span style="margin-left:10px">
+              <el-dropdown @command="changeWebLanguage" placement="top">
+                <span class="el-dropdown-link">
+                  <i
+                    class="fa fa-globe"
+                    aria-hidden="true"
+                  >{{ this.webLanguage == 'zh-CN' ? '简体中文' : 'English' }}</i>
+                  <i class="el-icon-arrow-up el-icon--right"></i>
+                </span>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item command="zh-CN">简体中文</el-dropdown-item>
+                  <el-dropdown-item command="en-US">English</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+            </span>
+          </div>
+        </footer>
       </div>
-      <footer v-if="showFooter" class="fix-to-bottom">
-        <div class="mundb-footer">
-          <el-row>
-            <el-col :md="6" :xs="24">
-              <h1>{{ websiteConfig.name }}</h1>
-              <span style="line-height:25px" v-html="websiteConfig.description" v-katex v-highlight></span>
-            </el-col>
-            <el-col class="hr-none">
-              <el-divider></el-divider>
-            </el-col>
-            <el-col :md="6" :xs="24">
-              <h1>{{ $t('m.Service') }}</h1>
-              <p>
-                <a @click="goRoute('/status')">{{ $t('m.Judging_Queue') }}</a>
-              </p>
-              <p>
-                <a @click="goRoute('/developer')">{{ $t('m.System_Info') }}</a>
-              </p>
-            </el-col>
-            <el-col class="hr-none">
-              <el-divider></el-divider>
-            </el-col>
-            <el-col :md="6" :xs="24">
-              <h1>{{ $t('m.Development') }}</h1>
-              <p class="mb-1">
-                <a href="https://gitee.com/himitzh0730/hoj" target="_blank">
-                  {{
-                  $t('m.Open_Source')
-                  }}
-                </a>
-              </p>
-              <p class="mb-1">
-                <a @click="goRoute('/#')">API</a>
-              </p>
-            </el-col>
-            <el-col class="hr-none">
-              <el-divider></el-divider>
-            </el-col>
-            <el-col :md="6" :xs="24">
-              <h1>{{ $t('m.Support') }}</h1>
-              <p>
-                <i class="fa fa-info-circle" aria-hidden="true"></i>
-                <a @click="goRoute('/introduction')">{{ $t('m.NavBar_About') }}</a>
-              </p>
-              <p>
-                <i class="el-icon-document"></i>
-                <a href="https://docs.hdoi.cn" target="_blank">{{ $t('m.Help') }}</a>
-              </p>
-            </el-col>
-          </el-row>
+      <div v-else>
+        <div id="admin-content">
+          <transition name="el-zoom-in-bottom">
+            <router-view></router-view>
+          </transition>
         </div>
-        <div class="mundb-footer">
-          <a
-            style="color:#1E9FFF"
-            :href="websiteConfig.recordUrl"
-            target="_blank"
-          >{{ websiteConfig.recordName }}</a>
-          Powered by
-          <a
-            :href="websiteConfig.projectUrl"
-            style="color:#1E9FFF"
-            target="_blank"
-          >{{ websiteConfig.projectName }}</a>
-          <span style="margin-left:10px">
-            <el-dropdown @command="changeWebLanguage" placement="top">
-              <span class="el-dropdown-link">
-                <i
-                  class="fa fa-globe"
-                  aria-hidden="true"
-                >{{ this.webLanguage == 'zh-CN' ? '简体中文' : 'English' }}</i>
-                <i class="el-icon-arrow-up el-icon--right"></i>
-              </span>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item command="zh-CN">简体中文</el-dropdown-item>
-                <el-dropdown-item command="en-US">English</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
-          </span>
-        </div>
-      </footer>
-    </div>
-    <div v-else>
-      <div id="admin-content">
-        <transition name="el-zoom-in-bottom">
-          <router-view></router-view>
-        </transition>
       </div>
     </div>
   </div>
@@ -105,10 +115,13 @@ import { mapActions, mapState, mapGetters } from "vuex";
 import { LOGO, MOTTO } from "@/common/logo";
 import storage from "@/common/storage";
 import utils from "@/common/utils";
+import Back from "@/components/oj/common/Back";
+
 export default {
   name: "app-content",
   components: {
     NavBar,
+    Back,
   },
   data() {
     return {
@@ -236,8 +249,8 @@ export default {
     window.addEventListener("visibilitychange", this.autoRefreshUserInfo);
   },
   mounted() {
-    console.log(LOGO);
-    console.log(MOTTO);
+    // console.log(LOGO);
+    // console.log(MOTTO);
     this.autoChangeLanguge();
     this.getWebsiteConfig();
   },
@@ -287,10 +300,15 @@ samp {
 
 #admin-content {
   background-color: #1e9fff;
-  position: absolute;
+  /* position: absolute; */
   top: 0;
   bottom: 0;
   width: 100%;
+}
+
+#back {
+  position: absolute;
+  z-index: 9999; /*防止被遮挡调到最大值*/
 }
 
 .mobile-menu-active {
@@ -525,6 +543,8 @@ a:hover {
 }
 @media screen and (min-width: 1050px) {
   #oj-content {
+    width: 86%;
+    margin: 0 auto;
     margin-top: 20px;
     padding: 0 3%;
     margin-bottom: 1.5rem;
@@ -538,6 +558,8 @@ a:hover {
 }
 @media screen and (max-width: 1050px) {
   #oj-content {
+    width: 100%;
+    margin: 0 auto;
     margin-top: 20px;
     padding: 0 5px;
     margin-bottom: 1.5rem;
@@ -551,7 +573,7 @@ a:hover {
     padding-right: 0px !important;
   }
   .el-message-box {
-    width: 70% !important;
+    width: 80% !important;
   }
 }
 #problem-content .sample pre {
@@ -859,8 +881,24 @@ footer h1 {
   word-wrap: break-word;
   word-break: break-word;
   line-height: 1.8;
+  color: black;
 }
+.markdown-body li {
+  color: black;
+}
+.markdown-body {
+  color: black;
+}
+.el-input__inner {
+  color: black;
+}
+
 .hljs {
   padding: 0 !important;
+}
+
+#back {
+  position: absolute;
+  z-index: 9999; /*防止被遮挡调到最大值*/
 }
 </style>

@@ -1,7 +1,12 @@
 package top.hcode.hoj.config;
 
 import lombok.Data;
+import com.alibaba.excel.util.CollectionUtils;
+import top.hcode.hoj.pojo.dto.RelatedLinkDTO;
 import top.hcode.hoj.utils.IpUtils;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @Author Himit_ZH
@@ -41,4 +46,23 @@ public class WebConfig {
     private String projectName = "HOJ";
 
     private String projectUrl = "https://gitee.com/himitzh0730/hoj";
+
+    private List<Map<String, String>> related;
+
+    public void setRelatedByList(List<RelatedLinkDTO> relatedList) {
+        if (CollectionUtils.isEmpty(relatedList)) {
+            return;
+        }
+
+        related = relatedList.stream()
+                .map(link -> {
+                    Map<String, String> linkMap = new HashMap<>();
+                    linkMap.put("link", link.getLink());
+                    linkMap.put("title", link.getTitle());
+                    linkMap.put("iconClass", link.getIconClass());
+                    return linkMap;
+                })
+                .collect(Collectors.toList());
+    }
+
 }

@@ -452,12 +452,6 @@ export default {
 };
 </script>
 <style scoped>
-@media screen and (min-width: 1050px) {
-  .scoreboard-body {
-    margin-left: -2%;
-    margin-right: -2%;
-  }
-}
 .contest-title {
   text-align: center;
 }

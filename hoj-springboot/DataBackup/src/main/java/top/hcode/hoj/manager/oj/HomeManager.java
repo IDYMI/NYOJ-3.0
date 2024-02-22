@@ -149,6 +149,10 @@ public class HomeManager {
     public Map<Object, Object> getWebConfig() {
         SwitchConfig switchConfig = nacosSwitchConfig.getSwitchConfig();
         WebConfig webConfig = nacosSwitchConfig.getWebConfig();
+
+        // 添加友情链接
+        List<Map<String, String>> related = webConfig.getRelated();
+
         return MapUtil.builder().put("baseUrl", UnicodeUtil.toString(webConfig.getBaseUrl()))
                 .put("name", UnicodeUtil.toString(webConfig.getName()))
                 .put("shortName", UnicodeUtil.toString(webConfig.getShortName()))
@@ -159,6 +163,7 @@ public class HomeManager {
                 .put("email", UnicodeUtil.toString(webConfig.getEmailUsername()))
                 .put("projectName", UnicodeUtil.toString(webConfig.getProjectName()))
                 .put("projectUrl", UnicodeUtil.toString(webConfig.getProjectUrl()))
+                .put("related", related)
                 .put("openPublicDiscussion", switchConfig.getOpenPublicDiscussion())
                 .put("openGroupDiscussion", switchConfig.getOpenGroupDiscussion())
                 .put("openContestComment", switchConfig.getOpenContestComment())

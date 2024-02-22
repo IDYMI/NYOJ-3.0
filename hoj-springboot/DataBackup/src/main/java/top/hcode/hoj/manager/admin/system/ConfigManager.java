@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -42,6 +43,7 @@ import java.util.*;
  */
 
 @Component
+@RefreshScope
 @Slf4j(topic = "hoj")
 public class ConfigManager {
     @Autowired
@@ -153,7 +155,7 @@ public class ConfigManager {
 
     public WebConfigDTO getWebConfig() {
         WebConfig webConfig = nacosSwitchConfig.getWebConfig();
-        return WebConfigDTO.builder()
+        WebConfigDTO webConfigDto = WebConfigDTO.builder()
                 .baseUrl(UnicodeUtil.toString(webConfig.getBaseUrl()))
                 .name(UnicodeUtil.toString(webConfig.getName()))
                 .shortName(UnicodeUtil.toString(webConfig.getShortName()))
@@ -164,6 +166,9 @@ public class ConfigManager {
                 .projectName(UnicodeUtil.toString(webConfig.getProjectName()))
                 .projectUrl(UnicodeUtil.toString(webConfig.getProjectUrl()))
                 .build();
+
+        webConfigDto.setRelatedByList(webConfig.getRelated());
+        return webConfigDto;
     }
 
     public void deleteHomeCarousel(Long id) throws StatusFailException {
@@ -223,6 +228,8 @@ public class ConfigManager {
         if (!StringUtils.isEmpty(config.getProjectUrl())) {
             webConfig.setProjectUrl(config.getProjectUrl());
         }
+        // 修改网站设置中的友情链接
+        webConfig.setRelatedByList(config.getRelated());
         boolean isOk = nacosSwitchConfig.publishWebConfig();
         if (!isOk) {
             throw new StatusFailException("修改失败");

@@ -23,7 +23,7 @@
         </template>
       </el-alert>
     </div>
-    <div class="container" :style="cid ? 'max-width: 100% !important;' : ''">
+    <div class="container" style="max-width: 100% !important;">
       <div class="own-input">
         <el-input
           v-model="ownInputComment"

@@ -54,6 +54,53 @@
             </el-form-item>
           </el-col>
           <el-col :md="24" :xs="24">
+            <div style="margin-bottom: 10px">
+              <el-button
+                type="primary"
+                icon="el-icon-plus"
+                circle
+                @click="insertEvent(-1)"
+                size="small"
+              ></el-button>
+              <el-button
+                type="danger"
+                icon="el-icon-delete"
+                circle
+                @click="removeEvent()"
+                size="small"
+              ></el-button>
+            </div>
+            <vxe-table
+              border
+              ref="xAwardTable"
+              :data="websiteConfig.related"
+              :edit-config="{ trigger: 'click', mode: 'cell' }"
+              align="center"
+              @edit-closed="editClosedEvent"
+              style="margin-bottom: 15px"
+            >
+              <vxe-table-column type="checkbox" width="60"></vxe-table-column>
+              <vxe-table-column
+                field="link"
+                min-width="150"
+                :title="$t('m.Link')"
+                :edit-render="{ name: 'input', attrs: { type: 'text' } }"
+              ></vxe-table-column>
+              <vxe-table-column
+                field="title"
+                min-width="150"
+                :title="$t('m.Related_Title')"
+                :edit-render="{ name: 'input', attrs: { type: 'text' } }"
+              ></vxe-table-column>
+              <vxe-table-column
+                field="iconClass"
+                min-width="150"
+                :title="$t('m.Related_IconClass')"
+                :edit-render="{ name: 'input', attrs: { type: 'text' } }"
+              ></vxe-table-column>
+            </vxe-table>
+          </el-col>
+          <el-col :md="24" :xs="24">
             <el-form-item :label="$t('m.Allow_Register')" label-width="120px">
               <el-switch
                 v-model="websiteConfig.register"
@@ -231,14 +278,16 @@ export default {
       .admin_getWebsiteConfig()
       .then((res) => {
         this.websiteConfig = res.data.data;
+        this.websiteConfig.related = this.websiteConfig.related || [];
       })
-      .catch(() => {}),
-      api
-        .admin_getDataBaseConfig()
-        .then((res) => {
-          this.databaseConfig = res.data.data;
-        })
-        .catch(() => {});
+      .catch(() => {});
+
+    api
+      .admin_getDataBaseConfig()
+      .then((res) => {
+        this.databaseConfig = res.data.data;
+      })
+      .catch(() => {});
   },
   methods: {
     saveSMTPConfig() {
@@ -276,6 +325,17 @@ export default {
       for (var key in this.websiteConfig) {
         if (key == "register") {
           continue;
+        } else if (key == "related") {
+          this.websiteConfig.related.forEach((link) => {
+            for (let prop in link) {
+              if (
+                link[prop] == null ||
+                !link[prop].replace(/(^\s*)|(\s*$)/g, "")
+              ) {
+                link[prop] = "None";
+              }
+            }
+          });
         } else {
           if (
             this.websiteConfig[key] == null ||
@@ -299,6 +359,55 @@ export default {
           myMessage.success(this.$i18n.t("m.Update_Successfully"));
         })
         .catch(() => {});
+    },
+    async insertEvent(row) {
+      let record = {
+        link: "/home",
+        title: "首页",
+        iconClass: "el-icon-link",
+      };
+      let { row: newRow } = await this.$refs.xAwardTable.insertAt(record, row);
+      const { insertRecords } = this.$refs.xAwardTable.getRecordset();
+      this.websiteConfig.related =
+        this.websiteConfig.related.concat(insertRecords);
+      this.saveWebsiteConfig();
+      await this.$refs.xAwardTable.setActiveCell(newRow, "link");
+    },
+    async removeEvent() {
+      this.$refs.xAwardTable.removeCheckboxRow();
+      let removeRecords = this.$refs.xAwardTable.getRemoveRecords();
+      function getDifferenceSetB(arr1, arr2, typeName) {
+        return Object.values(
+          arr1.concat(arr2).reduce((acc, cur) => {
+            if (
+              acc[cur[typeName]] &&
+              acc[cur[typeName]][typeName] === cur[typeName]
+            ) {
+              delete acc[cur[typeName]];
+            } else {
+              acc[cur[typeName]] = cur;
+            }
+            return acc;
+          }, {})
+        );
+      }
+      this.websiteConfig.related = getDifferenceSetB(
+        this.websiteConfig.related,
+        removeRecords,
+        "_XID"
+      );
+      this.saveWebsiteConfig();
+    },
+    editClosedEvent({ row, column }) {
+      let xTable = this.$refs.xAwardTable;
+      let field = column.property;
+      // 判断单元格值是否被修改
+      if (xTable.isUpdateByRow(row, field)) {
+        setTimeout(() => {
+          // 局部更新单元格为已保存状态
+          this.$refs.xAwardTable.reloadRow(row, null, field);
+        }, 300);
+      }
     },
   },
 };

@@ -178,6 +178,8 @@ export const m = {
   Send_Test_Message: '发送测试短信',
   DataSource_Config: '数据源设置',
   Please_input_your_email: '请输入你的邮箱',
+  Related_Title : '展示名称',
+  Related_IconClass : '展示按钮',
 
   // /views/admin/general/SysSwitch.vue
   Judge_Config: '评测配置',

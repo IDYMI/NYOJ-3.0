@@ -240,9 +240,10 @@ export default {
 .announcements-container li {
   padding-top: 15px;
   list-style: none;
-  padding-bottom: 15px;
+  padding-bottom: 25px;
   margin-left: 20px;
-  margin-top: 10px;
+  margin-right: 20px;
+  margin-top: 20px;
   font-size: 16px;
   border: 1px solid rgba(187, 187, 187, 0.5);
   border-left: 2px solid #409eff;
@@ -259,6 +260,7 @@ export default {
 
 .flex-container .title .entry {
   color: #495060;
+  font-size: 20px;
   font-style: oblique;
 }
 .flex-container .title a:hover {
@@ -281,7 +283,7 @@ export default {
 
 .no-announcement {
   text-align: center;
-  font-size: 16px;
+  font-size: 20px;
 }
 
 .announcement-animate-enter-active {

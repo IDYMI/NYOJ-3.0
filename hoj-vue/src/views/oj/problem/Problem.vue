@@ -1004,11 +1004,14 @@ export default {
       resize.onmousedown = function (e) {
         //颜色改变提醒
         resize.style.background = "#818181";
-        var startX = e.clientX;
+        // 鼠标的位置加上距离最左边
+        var leftSize = left.getBoundingClientRect().left;
+        var startX = e.clientX + leftSize;
+
         // 鼠标拖动事件
         document.onmousemove = function (e) {
           resize.left = startX;
-          var endX = e.clientX;
+          var endX = e.clientX - leftSize - 11;
           var moveLen = resize.left + (endX - startX); // （endx-startx）=移动的距离。resize.left+移动的距离=左边区域最后的宽度
           var maxT = box.offsetWidth - resize.offsetWidth; // 容器宽度 - 左边区域的宽度 = 右边区域的宽度
           if (moveLen < 420) {
@@ -1103,10 +1106,15 @@ export default {
             "problem-box" + "-" + this.$route.name
           );
           let tmp = (left.clientWidth / box.clientWidth) * 100;
+          // 防止右方的元素丢失
+          if (tmp === 100) {
+            tmp = 50;
+          }
           left.style.width = tmp + "%";
           right.style.width = 100 - tmp + "%";
         } else {
           right.style.width = "100%";
+          left.style.width = "100%";
         }
 
         let problemLeftHight = totalHeight - (headerHeight + 64);
@@ -1844,8 +1852,7 @@ a {
 }
 @media screen and (min-width: 992px) {
   .problem-body {
-    margin-left: -2%;
-    margin-right: -2%;
+    margin-bottom: 20px;
   }
   .js-left {
     height: 730px !important;
@@ -1859,9 +1866,6 @@ a {
   }
   .submit-detail {
     overflow-y: auto;
-  }
-  .js-right {
-    height: 635px !important;
   }
   #js-right-bottom {
     height: 49px;
@@ -2046,8 +2050,6 @@ a {
 }
 .captcha-container .captcha-code {
   width: auto;
-  margin-top: -20px;
-  margin-left: 20px;
 }
 
 .fl-right {

@@ -178,6 +178,8 @@ export const m = {
   Send_Test_Message: 'Send Test Message',
   DataSource_Config: 'DataSource Config',
   Please_input_your_email: 'Please input your email',
+  Related_Title : 'Title',
+  Related_IconClass : 'Icon Class',
 
   // /views/admin/general/SysSwitch.vue
   Judge_Config: 'Judge Config',

@@ -458,11 +458,12 @@ export default {
     width: 100% !important;
   }
   #contest-list .contest-main {
-    margin-left: 20px;
+    margin-left: 30px;
   }
 }
 #contest-list .contest-main {
   text-align: left;
+  transform: translateX(30px);
 }
 #contest-list .contest-main .title {
   font-size: 1.25rem;
