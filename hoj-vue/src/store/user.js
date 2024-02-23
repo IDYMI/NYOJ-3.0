@@ -69,6 +69,10 @@ const mutations = {
     state.userInfo = userInfo;
     storage.set('userInfo', userInfo);
   },
+  changeUserPreferences(state, { userInfo }) {
+    state.userInfo = userInfo;
+    storage.set('userInfo', userInfo);
+  },
   changeUserToken(state, token) {
     state.token = token;
     localStorage.setItem('token', token);

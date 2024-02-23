@@ -148,6 +148,20 @@ export const m = {
   File_Exceed_Tips: '文件大小错误, 您只能上传不大于2MB的图片文件！',
   Cancel_Avater_Tips: '您确定取消该图像的截取？',
 
+  // /components/oj/setting/Preferences.vue
+  Display_Preference: '显示偏好',
+  Usage_Preference: '使用偏好',
+  UI_Language: '界面语言',
+  UI_Theme: '界面主题',
+  Font_Family: '界面字体',
+  Code_FontFamily: '代码字体',
+  Code_Language: '代码语言',
+  Code_Size: '字体大小',
+  IDE_Theme: '编译器主题',
+  Default_Code_Template: '默认代码模板',
+  Your_Code_Template: '代码模板将在每次编程时显示，若留空，则将使用对应语言的内置代码模板。',
+  Theme: '界面主题',
+
   // /views/oj/user/UserHome.vue
   Recent_login_time: '最近上线时间：',
   Not_set_yet: '这个家伙很懒，什么也没写…',
@@ -189,6 +203,7 @@ export const m = {
   // /views/oj/user/Setting.vue
   Account_Setting: '账户设置',
   UserInfo_Setting: '资料设置',
+  Preferences_Setting: '偏好设置',
 
   // App.vue 底部文案
   Service: '服务',

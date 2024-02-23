@@ -1124,3 +1124,47 @@ DELIMITER ;
 CALL add_Home_Link ;
 
 DROP PROCEDURE add_Home_Link;
+
+/*
+* 增加用户的个人偏好设置表
+
+*/
+DROP PROCEDURE
+IF EXISTS add_User_Info_Preferences_Setting;
+DELIMITER $$
+
+CREATE PROCEDURE add_User_Info_Preferences_Setting ()
+BEGIN
+
+IF NOT EXISTS (
+	SELECT
+		1
+	FROM
+		information_schema.`COLUMNS`
+	WHERE
+		table_name = 'user_preferences'
+)THEN
+
+	CREATE TABLE `user_preferences` (
+	  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+	  `uid` varchar(32) NOT NULL COMMENT '用户id',
+	  `ui_language` varchar(255) DEFAULT NULL COMMENT '界面语言',
+	  `ui_theme` varchar(255) DEFAULT NULL COMMENT '界面风格',
+	  `code_language` varchar(255) DEFAULT NULL COMMENT '代码语言',
+	  `code_size` varchar(255) DEFAULT NULL COMMENT '字体大小',
+	  `ide_theme` varchar(255) DEFAULT NULL COMMENT '编译器主题',
+	  `code_template` longtext DEFAULT NULL COMMENT '个人代码模板',
+	  `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
+	  `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	  PRIMARY KEY (`id`,`uid`),
+	  KEY `uid` (`uid`),
+	  CONSTRAINT `user_preferences_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE
+	) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+END
+IF ; END$$
+
+DELIMITER ;
+CALL add_User_Info_Preferences_Setting;
+
+DROP PROCEDURE add_User_Info_Preferences_Setting;
+

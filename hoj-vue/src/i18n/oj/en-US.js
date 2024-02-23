@@ -149,6 +149,20 @@ export const m = {
   File_Exceed_Tips: ' file size is wrong, you can upload a image up to 2MB in size',
   Cancel_Avater_Tips: 'Are you sure you want to cancel the capture of this image?',
 
+  // /components/oj/setting/Preferences.vue
+  Display_Preference: 'Display Preference',
+  Usage_Preference: 'Usage Preference',
+  UI_Language: 'UI Language',
+  UI_Theme: 'UI Theme',
+  Font_Family: 'Font Family',
+  Code_FontFamily: 'Code Font Family',
+  Code_Language: 'Code Language',
+  Code_Size: 'Code Size',
+  IDE_Theme: 'IDE Theme',
+  Default_Code_Template: 'Default Code Template',
+  Your_Code_Template: 'The code template will be displayed each time you program, and if left blank, the built-in code template for the corresponding language will be used.',
+  Theme: 'Theme',
+
   // /views/oj/user/UserHome.vue
   Recent_login_time: 'Recently launched：',
   Not_set_yet: "This guy is lazy. He doesn't write anything.",
@@ -189,6 +203,8 @@ export const m = {
 
   // /views/oj/user/Setting.vue
   Account_Setting: 'Account Setting',
+  UserInfo_Setting: 'User Info Setting',
+  Preferences_Setting: 'Preferences Setting',
 
   // App.vue 底部文案
   Service: 'Service',

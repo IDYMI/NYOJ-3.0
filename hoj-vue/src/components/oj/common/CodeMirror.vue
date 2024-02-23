@@ -6,7 +6,7 @@
           <span>{{ $t('m.Lang') }}:</span>
           <span>
             <el-select
-              :value="this.language"
+              :value="CodeLanguage()"
               @change="onLangChange"
               class="left-adjust"
               size="small"
@@ -52,7 +52,7 @@
                     {{ $t('m.Theme') }}
                   </span>
                   <el-select
-                    :value="this.theme"
+                    :value="formProfile.ideTheme || this.theme"
                     @change="onThemeChange"
                     class="setting-item-value"
                     size="small"
@@ -71,7 +71,7 @@
                     {{ $t('m.FontSize') }}
                   </span>
                   <el-select
-                    :value="fontSize"
+                    :value="formProfile.codeSize || this.fontSize"
                     @change="onFontSizeChange"
                     class="setting-item-value"
                     size="small"
@@ -146,7 +146,7 @@
         </div>
       </el-col>
     </el-row>
-    <div :style="'line-height: 1.5;font-size:'+fontSize">
+    <div :style="'line-height: 1.5;font-size:' + formProfile.codeSize || this.fontSize">
       <codemirror
         class="js-right"
         :value="value"
@@ -472,6 +472,11 @@ export default {
   },
   data() {
     return {
+      formProfile: {
+        codeLanguage: "",
+        codeSize: "",
+        ideTheme: "",
+      },
       options: {
         // codemirror options
         tabSize: this.tabSize,
@@ -568,15 +573,24 @@ export default {
     };
   },
   mounted() {
+    let profile = this.$store.getters.userInfo;
+    Object.keys(this.formProfile).forEach((element) => {
+      if (profile[element] !== undefined) {
+        this.formProfile[element] = profile[element];
+      }
+    });
     utils.getLanguages().then((languages) => {
       let mode = {};
       languages.forEach((lang) => {
         mode[lang.name] = lang.contentType;
       });
       this.mode = mode;
+      if (this.languages.includes(this.formProfile.codeLanguage)) {
+        this.language = this.formProfile.codeLanguage;
+      }
       this.editor.setOption("mode", this.mode[this.language]);
     });
-    this.editor.setOption("theme", this.theme);
+    this.editor.setOption("theme", this.formProfile.ideTheme);
     this.editor.setSize("100%", this.height);
     this.editor.on("inputRead", (instance, changeObj) => {
       if (changeObj.text && changeObj.text.length > 0) {
@@ -598,6 +612,13 @@ export default {
     });
   },
   methods: {
+    CodeLanguage() {
+      if (this.languages.includes(this.formProfile.codeLanguage)) {
+        this.language = this.formProfile.codeLanguage;
+        this.onLangChange(this.language);
+      }
+      return this.language;
+    },
     CodeBeauty() {
       this.value = js_beautify(this.value || "");
       this.editor.setValue(this.value);
@@ -607,14 +628,21 @@ export default {
       this.$emit("update:value", newCode);
     },
     onLangChange(newVal) {
+      if (this.languages.includes(newVal)) {
+        this.formProfile.codeLanguage = newVal;
+        this.language = newVal;
+      }
       this.editor.setOption("mode", this.mode[newVal]);
       this.$emit("changeLang", newVal);
     },
     onThemeChange(newTheme) {
+      this.formProfile.ideTheme = newTheme;
+      this.theme = newTheme;
       this.editor.setOption("theme", newTheme);
       this.$emit("changeTheme", newTheme);
     },
     onFontSizeChange(fontSize) {
+      this.formProfile.codeSize = fontSize;
       this.fontSize = fontSize;
       this.$nextTick(() => {
         this.editor.refresh();
