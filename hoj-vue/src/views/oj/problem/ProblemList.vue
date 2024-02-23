@@ -607,7 +607,11 @@ export default {
       this.pushRouter();
     },
     pickone() {
-      api.pickone().then((res) => {
+      let oj = this.query.oj;
+      if (oj == "Mine") {
+        oj = "ME";
+      }
+      api.pickone(oj).then((res) => {
         myMessage.success(this.$i18n.t("m.Good_luck_to_you"));
         this.$router.push({
           name: "ProblemDetails",

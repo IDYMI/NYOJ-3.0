@@ -108,11 +108,17 @@ public class ProblemManager {
      * @Description 随机选取一道题目
      * @Since 2020/10/27
      */
-    public RandomProblemVO getRandomProblem() throws StatusFailException {
+    public RandomProblemVO getRandomProblem(String oj) throws StatusFailException {
         QueryWrapper<Problem> queryWrapper = new QueryWrapper<>();
+
         // 必须是公开题目
-        queryWrapper.select("problem_id").eq("auth", 1)
-                .eq("is_group", false);
+        if (!Constants.RemoteOJ.isRemoteOJ(oj)) {
+            queryWrapper.select("problem_id").eq("auth", 1).eq("is_remote", false).eq("is_group", false);
+        } else {
+            queryWrapper.select("problem_id").eq("auth", 1).eq("is_remote", true).eq("is_group", false)
+                    .likeRight("problem_id", oj);
+        }
+
         List<Problem> list = problemEntityService.list(queryWrapper);
         if (list.size() == 0) {
             throw new StatusFailException("获取随机题目失败，题库暂无公开题目！");

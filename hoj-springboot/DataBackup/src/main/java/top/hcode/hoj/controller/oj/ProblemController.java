@@ -57,8 +57,8 @@ public class ProblemController {
      */
     @GetMapping("/get-random-problem")
     @AnonApi
-    public CommonResult<RandomProblemVO> getRandomProblem() {
-        return problemService.getRandomProblem();
+    public CommonResult<RandomProblemVO> getRandomProblem(@RequestParam(value = "oj", required = false) String oj) {
+        return problemService.getRandomProblem(oj);
     }
 
     /**

@@ -40,9 +40,9 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     @Override
-    public CommonResult<RandomProblemVO> getRandomProblem() {
+    public CommonResult<RandomProblemVO> getRandomProblem(String oj) {
         try {
-            return CommonResult.successResponse(problemManager.getRandomProblem());
+            return CommonResult.successResponse(problemManager.getRandomProblem(oj));
         } catch (StatusFailException e) {
             return CommonResult.errorResponse(e.getMessage());
         }
