@@ -52,7 +52,8 @@ public class ReplyEntityServiceImpl extends ServiceImpl<ReplyMapper, Reply> impl
                     && !isRoot && !contest.getUid().equals(uid);
             if (onlyMineAndAdmin) { // 自己和比赛管理者评论可看
 
-                List<String> myAndAdminUidList = userInfoEntityService.getSuperAdminUidList();
+                List<String> myAndAdminUidList = userInfoEntityService.getNowContestAdmin(contest.getId());
+
                 myAndAdminUidList.add(uid);
                 myAndAdminUidList.add(contest.getUid());
                 return replyMapper.getAllReplyByCommentId(commentId, myAndAdminUidList);

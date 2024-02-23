@@ -2,6 +2,7 @@ package top.hcode.hoj.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
+import org.apache.ibatis.annotations.Param;
 import top.hcode.hoj.pojo.dto.RegisterDTO;
 import top.hcode.hoj.pojo.entity.user.UserInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -24,4 +25,8 @@ public interface UserInfoMapper extends BaseMapper<UserInfo> {
     List<String> getSuperAdminUidList();
 
     List<String> getProblemAdminUidList();
+
+    List<String> getNowContestAdmin(@Param("cid") Long cid);
+
+    List<String> getNowGroupAdmin(@Param("gid") Long gid);
 }

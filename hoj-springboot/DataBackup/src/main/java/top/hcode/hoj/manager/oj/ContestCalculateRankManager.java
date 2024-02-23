@@ -249,7 +249,7 @@ public class ContestCalculateRankManager {
                 externalCidList,
                 contest.getStartTime());
 
-        List<String> superAdminUidList = getSuperAdminUidList(contest.getGid());
+        List<String> superAdminUidList = getSuperAdminUidList(contest.getGid(), contest.getId());
 
         List<ACMContestRankVO> result = new ArrayList<>();
 
@@ -535,7 +535,7 @@ public class ContestCalculateRankManager {
         List<ContestRecordVO> oiContestRecord = contestRecordEntityService.getOIContestRecord(contest,
                 externalCidList, isOpenSealRank, isContainsAfterContestJudge);
 
-        List<String> superAdminUidList = getSuperAdminUidList(contest.getGid());
+        List<String> superAdminUidList = getSuperAdminUidList(contest.getGid(), contest.getId());
 
         List<OIContestRankVO> result = new ArrayList<>();
 
@@ -651,9 +651,9 @@ public class ContestCalculateRankManager {
         return orderResultList;
     }
 
-    public List<String> getSuperAdminUidList(Long gid) {
+    public List<String> getSuperAdminUidList(Long gid, Long cid) {
 
-        List<String> superAdminUidList = userInfoEntityService.getSuperAdminUidList();
+        List<String> superAdminUidList = userInfoEntityService.getNowContestAdmin(cid);
 
         if (gid != null) {
             QueryWrapper<GroupMember> groupMemberQueryWrapper = new QueryWrapper<>();
