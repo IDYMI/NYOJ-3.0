@@ -755,4 +755,7 @@ export const m = {
   // darkmode
   Dark: '暗色',
   Light: '亮色',
+
+  // Beauty
+  Beauty_Code: '美化代码',
 };

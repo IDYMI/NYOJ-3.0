@@ -753,4 +753,7 @@ export const m = {
   // darkmode
   Dark: 'Dark',
   Light: 'Light',
+
+  // Beauty
+  Beauty_Code: 'Beauty Code',
 };
