@@ -1,5 +1,7 @@
 <template>
   <div class="main">
+    <!-- 暗色模式 -->
+    <interpolator :dark="getTheme()" :watch-system="true" />
     <div id="app">
       <!-- 添加返回上下功能键 -->
       <Back id="back"></Back>
@@ -95,6 +97,21 @@
                 </el-dropdown-menu>
               </el-dropdown>
             </span>
+            <span style="margin-left: 10px">
+              <el-dropdown @command="changeWebTheme" placement="top">
+                <span class="el-dropdown-link">
+                  <i
+                    class="fa fa-globe"
+                    aria-hidden="true"
+                  >{{ this.webTheme == "Light" ? $t("m.Light") : $t("m.Dark") }}</i>
+                  <i class="el-icon-arrow-up el-icon--right"></i>
+                </span>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item command="Light">{{ $t("m.Light") }}</el-dropdown-item>
+                  <el-dropdown-item command="Dark">{{ $t("m.Dark") }}</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+            </span>
           </div>
         </footer>
       </div>
@@ -117,10 +134,17 @@ import storage from "@/common/storage";
 import utils from "@/common/utils";
 import Back from "@/components/oj/common/Back";
 
+import interpolator from "vue-apply-darkmode/src/vue-apply-darkmode.vue";
+import {
+  enable as enableDarkMode,
+  setFetchMethod as setFetch,
+} from "darkreader";
+
 export default {
   name: "app-content",
   components: {
     NavBar,
+    interpolator,
     Back,
   },
   data() {
@@ -131,6 +155,9 @@ export default {
   },
   methods: {
     ...mapActions(["changeDomTitle", "getWebsiteConfig"]),
+    getTheme() {
+      return this.webTheme == "Dark";
+    },
     goRoute(path) {
       this.$router.push({
         path: path,
@@ -138,6 +165,9 @@ export default {
     },
     changeWebLanguage(language) {
       this.$store.commit("changeWebLanguage", { language: language });
+    },
+    changeWebTheme(theme) {
+      this.$store.commit("changeWebTheme", { theme: theme });
     },
     autoChangeLanguge() {
       /**
@@ -223,7 +253,7 @@ export default {
   },
   computed: {
     ...mapState(["websiteConfig"]),
-    ...mapGetters(["webLanguage", "token", "isAuthenticated"]),
+    ...mapGetters(["webLanguage", "webTheme", "token", "isAuthenticated"]),
   },
   created: function () {
     this.$nextTick(function () {
@@ -246,6 +276,9 @@ export default {
       this.$route.name == "ProblemDetails" ||
       utils.isFocusModePage(this.$route.name)
     );
+    //解决跨域报错
+    setFetch(window.fetch);
+    enableDarkMode();
     window.addEventListener("visibilitychange", this.autoRefreshUserInfo);
   },
   mounted() {
