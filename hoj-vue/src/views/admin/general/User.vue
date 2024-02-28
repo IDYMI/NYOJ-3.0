@@ -227,11 +227,26 @@
               <el-input-number v-model="formGenerateUser.number_to" style="width: 100%"></el-input-number>
             </el-form-item>
           </el-col>
-          <el-col :md="4" :xs="24">
+          <el-col :md="4" :xs="24" v-if="!isPasswdCustom">
             <el-form-item :label="$t('m.Password_Length')" prop="password_length">
               <el-input
                 v-model.number="formGenerateUser.password_length"
                 :placeholder="$t('m.Password_Length')"
+              ></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :md="4" :xs="24">
+            <el-form-item :label="$t('m.Password_Custom')" prop="password_custom">
+              <el-switch
+                v-model="isPasswdCustom"
+                :active-text="$t('m.True')"
+                :width="40"
+                :inactive-text="$t('m.False')"
+              ></el-switch>
+              <el-input
+                v-if="isPasswdCustom"
+                v-model="formGenerateUser.password_custom"
+                :placeholder="$t('m.Password_Custom')"
               ></el-input>
             </el-form-item>
           </el-col>
@@ -511,6 +526,7 @@ export default {
         number_from: 0,
         number_to: 10,
         password_length: 6,
+        password_custom: "",
       },
       formGenerateRules: {
         number_from: [
@@ -541,7 +557,9 @@ export default {
           },
           { validator: CheckPwdLength, trigger: "blur" },
         ],
+        password_custom: [{ validator: CheckPwdLength, trigger: "blur" }],
       },
+      isPasswdCustom: false,
     };
   },
   mounted() {

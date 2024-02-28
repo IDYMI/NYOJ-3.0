@@ -261,6 +261,7 @@ public class AdminUserManager {
         int numberFrom = (int) params.getOrDefault("number_from", 1);
         int numberTo = (int) params.getOrDefault("number_to", 10);
         int passwordLength = (int) params.getOrDefault("password_length", 6);
+        String passwd = (String) params.getOrDefault("password_custom", "");
 
         List<UserInfo> userInfoList = new LinkedList<>();
         List<UserRole> userRoleList = new LinkedList<>();
@@ -270,7 +271,7 @@ public class AdminUserManager {
         HashMap<String, Object> userInfo = new HashMap<>(); // 存储账号密码放入redis中，等待导出excel
         for (int num = numberFrom; num <= numberTo; num++) {
             String uuid = IdUtil.simpleUUID();
-            String password = RandomUtil.randomString(passwordLength);
+            String password = StringUtils.isEmpty(passwd) ? RandomUtil.randomString(passwordLength) : passwd;
             String username = prefix + num + suffix;
             userInfoList.add(new UserInfo()
                     .setUuid(uuid)

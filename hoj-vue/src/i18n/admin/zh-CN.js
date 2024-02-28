@@ -91,6 +91,9 @@ export const m = {
   Extra_Account: '额外允许参加比赛的账号列表',
   Extra_Account_Tips: '请输入允许参加比赛账号的用户名，并用空格隔开。',
   Password_Length: '密码长度',
+  Password_Custom: '自定义密码',
+  True: '是',
+  False: '否',
   Generate_and_Export: '生成 & 导出',
   The_usernames_will_be: '生成的用户名将会是',
   Set_New_PWD: '设置新密码',
@@ -178,8 +181,8 @@ export const m = {
   Send_Test_Message: '发送测试短信',
   DataSource_Config: '数据源设置',
   Please_input_your_email: '请输入你的邮箱',
-  Related_Title : '展示名称',
-  Related_IconClass : '展示按钮',
+  Related_Title: '展示名称',
+  Related_IconClass: '展示按钮',
 
   // /views/admin/general/SysSwitch.vue
   Judge_Config: '评测配置',
