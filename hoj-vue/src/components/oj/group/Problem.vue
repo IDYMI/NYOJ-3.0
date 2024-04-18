@@ -133,6 +133,9 @@
                 >
                   <el-radio :label="0">ACM</el-radio>
                   <el-radio :label="1">OI</el-radio>
+                  <el-radio :label="2">{{$t('m.Selection')}}</el-radio>
+                  <el-radio :label="3">{{$t('m.Filling')}}</el-radio>
+                  <el-radio :label="4">{{$t('m.Decide')}}</el-radio>
                 </el-radio-group>
               </el-form-item>
             </el-col>
