@@ -163,7 +163,7 @@
                       </span>
                       <br />
                     </template>
-                    <template v-if="problemData.problem.type == 1">
+                    <template v-if="type == 1">
                       <span>{{ $t('m.Score') }}：{{ problemData.problem.ioScore }}</span>
                       <span v-if="!contestID" style="margin-left:5px;">
                         {{ $t('m.OI_Rank_Score') }}：{{
@@ -218,36 +218,56 @@
                     ></Markdown>
                   </template>
 
-                  <template v-if="problemData.problem.examples">
-                    <div v-for="(example, index) of problemData.problem.examples" :key="index">
-                      <div class="flex-container example">
-                        <div class="example-input">
-                          <p class="title">
-                            {{ $t('m.Sample_Input') }} {{ index + 1 }}
-                            <a
-                              class="copy"
-                              v-clipboard:copy="example.input"
-                              v-clipboard:success="onCopy"
-                              v-clipboard:error="onCopyError"
-                            >
-                              <i class="el-icon-document-copy"></i>
-                            </a>
-                          </p>
-                          <pre>{{ example.input }}</pre>
+                  <template v-if="isACMorOI">
+                    <template v-if="problemData.problem.examples">
+                      <div v-for="(example, index) of problemData.problem.examples" :key="index">
+                        <div class="flex-container example">
+                          <div class="example-input">
+                            <p class="title">
+                              {{ $t('m.Sample_Input') }} {{ index + 1 }}
+                              <a
+                                class="copy"
+                                v-clipboard:copy="example.input"
+                                v-clipboard:success="onCopy"
+                                v-clipboard:error="onCopyError"
+                              >
+                                <i class="el-icon-document-copy"></i>
+                              </a>
+                            </p>
+                            <pre>{{ example.input }}</pre>
+                          </div>
+                          <div class="example-output">
+                            <p class="title">
+                              {{ $t('m.Sample_Output') }} {{ index + 1 }}
+                              <a
+                                class="copy"
+                                v-clipboard:copy="example.output"
+                                v-clipboard:success="onCopy"
+                                v-clipboard:error="onCopyError"
+                              >
+                                <i class="el-icon-document-copy"></i>
+                              </a>
+                            </p>
+                            <pre>{{ example.output }}</pre>
+                          </div>
                         </div>
-                        <div class="example-output">
-                          <p class="title">
-                            {{ $t('m.Sample_Output') }} {{ index + 1 }}
-                            <a
-                              class="copy"
-                              v-clipboard:copy="example.output"
-                              v-clipboard:success="onCopy"
-                              v-clipboard:error="onCopyError"
-                            >
-                              <i class="el-icon-document-copy"></i>
-                            </a>
-                          </p>
+                      </div>
+                    </template>
+                  </template>
+                  <!-- 选择题 -->
+                  <template v-else-if="type == 2">
+                    <div v-for="(example, index) in problemData.problem.examples" :key="index">
+                      <div class="flex-container example" v-if="index % 2 === 0">
+                        <div class="example-input">
+                          <p class="title">{{ String.fromCharCode(65 + index) }}</p>
                           <pre>{{ example.output }}</pre>
+                        </div>
+                        <div
+                          class="example-input"
+                          v-if="index + 1 < problemData.problem.examples.length"
+                        >
+                          <p class="title">{{ String.fromCharCode(65 + index + 1) }}</p>
+                          <pre>{{ problemData.problem.examples[index + 1].output }}</pre>
                         </div>
                       </div>
                     </div>
@@ -331,11 +351,7 @@
                         <span>{{ submissionMemoryFormat(row.memory) }}</span>
                       </template>
                     </vxe-table-column>
-                    <vxe-table-column
-                      :title="$t('m.Score')"
-                      min-width="64"
-                      v-if="problemData.problem.type == 1"
-                    >
+                    <vxe-table-column :title="$t('m.Score')" min-width="64" v-if="type == 1">
                       <template v-slot="{ row }">
                         <template v-if="contestID && row.score != null">
                           <el-tag
@@ -504,28 +520,74 @@
           :id="'problem-right' + '-' + $route.name"
         >
           <el-card :padding="10" id="submit-code" shadow="always" class="submit-detail">
-            <CodeMirror
-              :value.sync="code"
-              :languages="problemData.languages"
-              :language.sync="language"
-              :theme.sync="theme"
-              :height.sync="height"
-              :fontSize.sync="fontSize"
-              :tabSize.sync="tabSize"
-              @resetCode="onResetToTemplate"
-              @changeTheme="onChangeTheme"
-              @changeLang="onChangeLang"
-              @getUserLastAccepetedCode="getUserLastAccepetedCode"
-              @switchFocusMode="switchFocusMode"
-              :openFocusMode.sync="openFocusMode"
-              :openTestCaseDrawer.sync="openTestCaseDrawer"
-              :problemTestCase="problemData.problem.examples"
-              :pid="problemData.problem.id"
-              :type="problemType"
-              :isAuthenticated="isAuthenticated"
-              :isRemoteJudge="problemData.problem.isRemote"
-              :submitDisabled="submitDisabled"
-            ></CodeMirror>
+            <div v-if="isACMorOI">
+              <CodeMirror
+                :value.sync="code"
+                :languages="problemData.languages"
+                :language.sync="language"
+                :theme.sync="theme"
+                :height.sync="height"
+                :fontSize.sync="fontSize"
+                :tabSize.sync="tabSize"
+                @resetCode="onResetToTemplate"
+                @changeTheme="onChangeTheme"
+                @changeLang="onChangeLang"
+                @getUserLastAccepetedCode="getUserLastAccepetedCode"
+                @switchFocusMode="switchFocusMode"
+                :openFocusMode.sync="openFocusMode"
+                :openTestCaseDrawer.sync="openTestCaseDrawer"
+                :problemTestCase="problemData.problem.examples"
+                :pid="problemData.problem.id"
+                :type="problemType"
+                :isAuthenticated="isAuthenticated"
+                :isRemoteJudge="problemData.problem.isRemote"
+                :submitDisabled="submitDisabled"
+              ></CodeMirror>
+            </div>
+            <div v-else-if="type === 2 || type === 4" :style="{ height: (height + 60) + 'px' }">
+              <div :style="{ height: '85%', display: 'flex', flexDirection: 'column' }">
+                <div
+                  style="flex-grow: 1; display: flex; flex-direction: column; justify-content: space-around;"
+                >
+                  <div
+                    v-for="(item, index) in (type === 2 ? problemData.problem.examples : orderList)"
+                    :key="index"
+                  >
+                    <el-button
+                      class="centered-button"
+                      size="size"
+                      @click="addAnswer(item, index)"
+                      style="flex-grow: 1;"
+                    >{{ type === 2 ? String.fromCharCode(65 + index) : item.output }}</el-button>
+                  </div>
+                </div>
+              </div>
+              <el-form>
+                <el-form-item :label="$t('m.Selected_Answer')" required>
+                  <el-tag
+                    v-for="selected in selectedList"
+                    closable
+                    :close-transition="false"
+                    :key="selected.index"
+                    size="small"
+                    @close="closeAnswer(selected)"
+                    style="margin-right: 7px;margin-top:4px"
+                  >{{ type === 2 ? String.fromCharCode(65 + selected.index) : selected.output }}</el-tag>
+                </el-form-item>
+              </el-form>
+            </div>
+            <div v-else :style="{ height: (height + 60) + 'px' }">
+              <el-form>
+                <el-form-item :label="$t('m.Filling_Answer')" required>
+                  <el-input
+                    v-for="(selected, index) in problemData.problem.examples"
+                    :key="index"
+                    v-model="selected.output"
+                    style="margin-top: 20px"
+                  ></el-input>
+                </el-form-item>
+              </el-form>
+            </div>
             <div id="js-right-bottom">
               <el-row>
                 <el-col :sm="24" :md="10" :lg="10" style="margin-top:4px;">
@@ -691,32 +753,34 @@
                     <span v-if="submitting">{{ $t('m.Submitting') }}</span>
                     <span v-else>{{ $t('m.Submit') }}</span>
                   </el-button>
-                  <el-tag
-                    type="success"
-                    :class="openTestCaseDrawer?'tj-btn active':'tj-btn non-active'"
-                    @click.native="openTestJudgeDrawer"
-                    v-if="!submitDisabled"
-                    effect="plain"
-                  >
-                    <svg
-                      t="1653665263421"
-                      class="icon"
-                      viewBox="0 0 1024 1024"
-                      version="1.1"
-                      xmlns="http://www.w3.org/2000/svg"
-                      p-id="1656"
-                      width="12"
-                      height="12"
-                      style="vertical-align: middle;"
+                  <div v-if="isACMorOI">
+                    <el-tag
+                      type="success"
+                      :class="openTestCaseDrawer?'tj-btn active':'tj-btn non-active'"
+                      @click.native="openTestJudgeDrawer"
+                      v-if="!submitDisabled"
+                      effect="plain"
                     >
-                      <path
-                        d="M1022.06544 583.40119c0 11.0558-4.034896 20.61962-12.111852 28.696576-8.077979 8.077979-17.639752 12.117992-28.690436 12.117992L838.446445 624.215758c0 72.690556-14.235213 134.320195-42.718941 184.89915l132.615367 133.26312c8.076956 8.065699 12.117992 17.634636 12.117992 28.690436 0 11.050684-4.034896 20.614503-12.117992 28.691459-7.653307 8.065699-17.209964 12.106736-28.690436 12.106736-11.475356 0-21.040199-4.041036-28.690436-12.106736L744.717737 874.15318c-2.124384 2.118244-5.308913 4.88424-9.558703 8.283664-4.259 3.3984-13.180184 9.463536-26.78504 18.171871-13.598716 8.715499-27.415396 16.473183-41.439808 23.276123-14.029528 6.797823-31.462572 12.966313-52.289923 18.49319-20.827351 5.517667-41.446971 8.28571-61.842487 8.28571L552.801776 379.38668l-81.611739 0 0 571.277058c-21.668509 0-43.250036-2.874467-64.707744-8.615215-21.473057-5.734608-39.960107-12.749372-55.476499-21.039175-15.518438-8.289804-29.541827-16.572444-42.077328-24.867364-12.541641-8.290827-21.781072-15.193027-27.739784-20.714787l-9.558703-8.93244L154.95056 998.479767c-8.500605 8.921183-18.699897 13.386892-30.606065 13.386892-10.201339 0-19.335371-3.40454-27.409257-10.202363-8.079002-7.652284-12.437264-17.10968-13.080923-28.372188-0.633427-11.263531 2.659573-21.143553 9.893324-29.647227l128.787178-144.727219c-24.650423-48.464805-36.980239-106.699114-36.980239-174.710091L42.738895 624.207571c-11.057847 0-20.61655-4.041036-28.690436-12.111852-8.079002-8.082072-12.120039-17.640776-12.120039-28.696576 0-11.050684 4.041036-20.61962 12.120039-28.689413 8.073886-8.072863 17.632589-12.107759 28.690436-12.107759l142.81466 0L185.553555 355.156836l-110.302175-110.302175c-8.074909-8.077979-12.113899-17.640776-12.113899-28.691459 0-11.04966 4.044106-20.61962 12.113899-28.690436 8.071839-8.076956 17.638729-12.123109 28.691459-12.123109 11.056823 0 20.612457 4.052293 28.692482 12.123109l110.302175 110.302175 538.128077 0 110.303198-110.302175c8.070816-8.076956 17.632589-12.123109 28.690436-12.123109 11.050684 0 20.617573 4.052293 28.689413 12.123109 8.077979 8.070816 12.119015 17.640776 12.119015 28.690436 0 11.050684-4.041036 20.614503-12.119015 28.691459l-110.302175 110.302175 0 187.448206 142.815683 0c11.0558 0 20.618597 4.034896 28.690436 12.113899 8.076956 8.069793 12.117992 17.638729 12.117992 28.683273l0 0L1022.06544 583.40119 1022.06544 583.40119zM716.021162 216.158085 307.968605 216.158085c0-56.526411 19.871583-104.667851 59.616796-144.414087 39.733956-39.746236 87.88256-59.611679 144.411017-59.611679 56.529481 0 104.678084 19.865443 144.413064 59.611679C696.156742 111.48921 716.021162 159.631674 716.021162 216.158085L716.021162 216.158085 716.021162 216.158085 716.021162 216.158085z"
-                        p-id="1657"
-                        :fill="openTestCaseDrawer?'#ffffff':'#67c23a'"
-                      />
-                    </svg>
-                    <span style="vertical-align: middle;">{{ $t('m.Online_Test') }}</span>
-                  </el-tag>
+                      <svg
+                        t="1653665263421"
+                        class="icon"
+                        viewBox="0 0 1024 1024"
+                        version="1.1"
+                        xmlns="http://www.w3.org/2000/svg"
+                        p-id="1656"
+                        width="12"
+                        height="12"
+                        style="vertical-align: middle;"
+                      >
+                        <path
+                          d="M1022.06544 583.40119c0 11.0558-4.034896 20.61962-12.111852 28.696576-8.077979 8.077979-17.639752 12.117992-28.690436 12.117992L838.446445 624.215758c0 72.690556-14.235213 134.320195-42.718941 184.89915l132.615367 133.26312c8.076956 8.065699 12.117992 17.634636 12.117992 28.690436 0 11.050684-4.034896 20.614503-12.117992 28.691459-7.653307 8.065699-17.209964 12.106736-28.690436 12.106736-11.475356 0-21.040199-4.041036-28.690436-12.106736L744.717737 874.15318c-2.124384 2.118244-5.308913 4.88424-9.558703 8.283664-4.259 3.3984-13.180184 9.463536-26.78504 18.171871-13.598716 8.715499-27.415396 16.473183-41.439808 23.276123-14.029528 6.797823-31.462572 12.966313-52.289923 18.49319-20.827351 5.517667-41.446971 8.28571-61.842487 8.28571L552.801776 379.38668l-81.611739 0 0 571.277058c-21.668509 0-43.250036-2.874467-64.707744-8.615215-21.473057-5.734608-39.960107-12.749372-55.476499-21.039175-15.518438-8.289804-29.541827-16.572444-42.077328-24.867364-12.541641-8.290827-21.781072-15.193027-27.739784-20.714787l-9.558703-8.93244L154.95056 998.479767c-8.500605 8.921183-18.699897 13.386892-30.606065 13.386892-10.201339 0-19.335371-3.40454-27.409257-10.202363-8.079002-7.652284-12.437264-17.10968-13.080923-28.372188-0.633427-11.263531 2.659573-21.143553 9.893324-29.647227l128.787178-144.727219c-24.650423-48.464805-36.980239-106.699114-36.980239-174.710091L42.738895 624.207571c-11.057847 0-20.61655-4.041036-28.690436-12.111852-8.079002-8.082072-12.120039-17.640776-12.120039-28.696576 0-11.050684 4.041036-20.61962 12.120039-28.689413 8.073886-8.072863 17.632589-12.107759 28.690436-12.107759l142.81466 0L185.553555 355.156836l-110.302175-110.302175c-8.074909-8.077979-12.113899-17.640776-12.113899-28.691459 0-11.04966 4.044106-20.61962 12.113899-28.690436 8.071839-8.076956 17.638729-12.123109 28.691459-12.123109 11.056823 0 20.612457 4.052293 28.692482 12.123109l110.302175 110.302175 538.128077 0 110.303198-110.302175c8.070816-8.076956 17.632589-12.123109 28.690436-12.123109 11.050684 0 20.617573 4.052293 28.689413 12.123109 8.077979 8.070816 12.119015 17.640776 12.119015 28.690436 0 11.050684-4.041036 20.614503-12.119015 28.691459l-110.302175 110.302175 0 187.448206 142.815683 0c11.0558 0 20.618597 4.034896 28.690436 12.113899 8.076956 8.069793 12.117992 17.638729 12.117992 28.683273l0 0L1022.06544 583.40119 1022.06544 583.40119zM716.021162 216.158085 307.968605 216.158085c0-56.526411 19.871583-104.667851 59.616796-144.414087 39.733956-39.746236 87.88256-59.611679 144.411017-59.611679 56.529481 0 104.678084 19.865443 144.413064 59.611679C696.156742 111.48921 716.021162 159.631674 716.021162 216.158085L716.021162 216.158085 716.021162 216.158085 716.021162 216.158085z"
+                          p-id="1657"
+                          :fill="openTestCaseDrawer?'#ffffff':'#67c23a'"
+                        />
+                      </svg>
+                      <span style="vertical-align: middle;">{{ $t('m.Online_Test') }}</span>
+                    </el-tag>
+                  </div>
                 </el-col>
               </el-row>
             </div>
@@ -868,6 +932,10 @@ export default {
       openTestCaseDrawer: false,
       openFocusMode: false,
       showProblemHorizontalMenu: false,
+      isACMorOI: true,
+      type: null,
+      selectedList: [],
+      orderList: [{ output: "YES" }, { output: "NO" }],
     };
   },
   created() {
@@ -1528,11 +1596,6 @@ export default {
     },
 
     submitCode() {
-      if (this.code.trim() === "") {
-        myMessage.error(this.$i18n.t("m.Code_can_not_be_empty"));
-        return;
-      }
-
       if (this.code.length > 65535) {
         myMessage.error(this.$i18n.t("m.Code_Length_can_not_exceed_65535"));
         return;
@@ -1547,6 +1610,16 @@ export default {
       this.submissionId = "";
       this.result = { status: 9 };
       this.submitting = true;
+
+      if (!this.isACMorOI) {
+        this.code = this.formartCode;
+      }
+
+      if (this.code.trim() === "") {
+        myMessage.error(this.$i18n.t("m.Code_can_not_be_empty"));
+        return;
+      }
+
       let data = {
         pid: this.problemID, // 如果是比赛题目就为display_id
         language: this.language,
@@ -1708,6 +1781,26 @@ export default {
         tabSize: this.tabSize,
       });
     },
+    addAnswer(example, index) {
+      let type = this.problemData.problem.type;
+      if (type === 4) {
+        this.selectedList = [];
+      }
+      const isSelected = this.selectedList.some(
+        (item) => item.output === example.output && item.index === example.index
+      );
+      if (!isSelected) {
+        example["index"] = index;
+        this.selectedList.push(example);
+      }
+    },
+    closeAnswer(example) {
+      this.selectedList = this.selectedList.filter((item) => {
+        return !(
+          item.output === example.output && item.index === example.index
+        );
+      });
+    },
   },
   computed: {
     ...mapGetters([
@@ -1788,6 +1881,27 @@ export default {
         return "public";
       }
     },
+    formartCode() {
+      let type = this.problemData.problem.type;
+
+      this.sortedList = this.selectedList.sort((a, b) => a.index - b.index);
+      let sortedList = this.sortedList;
+      if (type == 3) {
+        sortedList = this.problemData.problem.examples;
+      }
+
+      let formartCode = "";
+      for (let i = 0; i < sortedList.length; i++) {
+        let answer = "";
+        if (type === 2) {
+          answer = String.fromCharCode(65 + sortedList[i]["index"]);
+        } else if (type === 3 || type === 4) {
+          answer = sortedList[i]["output"];
+        }
+        formartCode += answer + "\n";
+      }
+      return formartCode;
+    },
   },
   beforeRouteLeave(to, from, next) {
     this.beforeLeaveDo(from.params.contestID);
@@ -1821,6 +1935,16 @@ export default {
     activeName() {
       this.resizeWatchHeight();
     },
+    "problemData.problem.type"() {
+      let type = this.problemData.problem.type;
+
+      this.type = type;
+      if (type == 0 || type == 1) {
+        this.isACMorOI = true;
+      } else {
+        this.isACMorOI = false;
+      }
+    },
   },
 };
 </script>
@@ -1831,6 +1955,13 @@ export default {
 </style>
 
 <style scoped>
+.centered-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px auto; /* 上下间距10px，左右自动居中 */
+  width: 80%; /* 宽度为父元素宽度的80% */
+}
 .problem-menu {
   float: left;
 }
