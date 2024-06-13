@@ -333,3 +333,32 @@
    ![image.png](docs/docs/.vuepress/public/239c092b4cce4c5bbf9e2488881997e0.png)
 
 2024 年 5 月 19 日 19 点
+
+# 增加 PDF 题面
+   ![image.png](docs/docs/.vuepress/public/9bd3850f233d4cb49a01771fd4cd9320.png)
+
+   每次启动后进入容器
+   ```cmd
+   docker exec -it hoj-wkhtmltopdf /bin/bash
+   ```
+   安装字体，不然会中文字体不显示
+   ```cmd
+   apt-get install -y ttf-wqy-zenhei ttf-wqy-microhei
+   ```
+   docker-compose.yml 中添加
+   ```yml
+   hoj-wkhtmltopdf:
+      image: dicoming/wkhtmltopdf-ws
+      container_name: hoj-wkhtmltopdf
+      volumes:
+         - ${HOJ_DATA_DIRECTORY}/file/problem:/tmp/wkhtmltopdf
+      ports:
+         - "8001:80"
+      restart: unless-stopped
+      networks:
+         hoj-network:
+         ipv4_address: 172.20.0.9
+
+   ```
+
+2024 年 5 月 20 日 20 点

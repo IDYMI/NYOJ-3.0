@@ -99,6 +99,12 @@
                       </el-link>
                     </span>
                     <span>
+                      <el-link type="primary" :underline="false" @click="getProblemPdf()">
+                        <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                        {{ $t('m.View_as_PDF') }}
+                      </el-link>
+                    </span>
+                    <span>
                       <el-link
                         type="primary"
                         :underline="false"
@@ -827,6 +833,7 @@
         >{{ $t('m.Submit') }}</el-button>
       </el-form>
     </el-dialog>
+    <Editor v-show="false" ref="editorRef" v-model="htmlBuilder" />
   </div>
 </template>
 
@@ -855,6 +862,7 @@ import Markdown from "@/components/oj/common/Markdown";
 // 只显示这些状态的图形占用
 const filtedStatus = ["wa", "ce", "ac", "pa", "tle", "mle", "re", "pe"];
 const Announcement = () => import("@/views/oj/about/Switch_Announcement.vue");
+import Editor from "@/components/admin/Editor.vue";
 
 export default {
   name: "ProblemDetails",
@@ -864,6 +872,7 @@ export default {
     ProblemHorizontalMenu,
     Markdown,
     Announcement,
+    Editor,
   },
   data() {
     return {
@@ -936,6 +945,7 @@ export default {
       type: null,
       selectedList: [],
       orderList: [{ output: "YES" }, { output: "NO" }],
+      htmlBuilder: "",
     };
   },
   created() {
@@ -1801,6 +1811,233 @@ export default {
         );
       });
     },
+    getProblemPdf() {
+      let problem = this.problemData.problem;
+      const regex = /\/api\/public\/file\/([^\/]+\.pdf)/;
+      const match = problem.description.match(regex);
+      if (match) {
+        let result = "/api/public/file/" + match[1];
+        // 打开pdf题面
+        window.open(result, "_blank");
+      } else {
+        this.buildHtml();
+
+        // 获取html的结果
+        setTimeout(() => {
+          if (this.$refs.editorRef) {
+            let html = this.$refs.editorRef.$refs.md.d_render;
+            // 创建一个新的 div 元素
+            const div = document.createElement("div");
+            // 将原始 HTML 片段的内容赋值给新的 div 元素
+            div.innerHTML = html;
+            // katex-html 中多余元素，移除所有包裹在 katex-html 中的 span 和 annotation 元素
+            // 影响最后显示效果的弹窗 script 中的MathJax转化方法
+            const katexHtmlSpans = div.querySelectorAll(
+              '.katex-html, annotation[encoding="application/x-tex"]'
+              // 'script[src="http://cdn.mathjax.org/mathjax/latest/MathJax.js"]'
+            );
+            katexHtmlSpans.forEach((span) => {
+              span.parentNode.removeChild(span);
+            });
+
+            // 解决代码段首行换行问题
+            let reloadHtml = div.innerHTML.replace(
+              /<code class=".*?">/,
+              "$&\n"
+            );
+
+            // 获取根域名
+            let loc = window.location;
+            let rootUrl = loc.origin;
+
+            // 将本域图片加上域名
+            reloadHtml = reloadHtml.replace(
+              /"\/api\/public\/img/g,
+              '"' + rootUrl + "/api/public/img"
+            );
+
+            // 处理newoj的图片跨域
+            reloadHtml = reloadHtml.replace(
+              /"\/\/images\.weserv\.nl\/\?url=/g,
+              '"'
+            );
+
+            api
+              .getProblemPdf(
+                this.problemID,
+                this.contestID,
+                this.groupID,
+                reloadHtml
+              )
+              .then(
+                (res) => {
+                  let result = res.data.msg;
+
+                  // 打开pdf题面
+                  window.open(result, "_blank");
+                },
+                (err) => {}
+              );
+          }
+        }, 100); // 设置一个适当的时间
+      }
+    },
+
+    buildHtml() {
+      let problem = this.problemData.problem;
+      let htmlBuilder = "";
+
+      htmlBuilder += "<!DOCTYPE html>";
+      htmlBuilder += '<html lang="en">';
+      htmlBuilder += "<head>";
+      htmlBuilder +=
+        '<meta http-equiv="content-type" content="text/html;charset=utf-8">';
+      htmlBuilder += `<title>${problem.title}</title>`;
+      htmlBuilder += "<style>";
+      htmlBuilder +=
+        "body { font-family: Arial, sans-serif; line-height: 1.6; }";
+      htmlBuilder +=
+        ".header { text-align: center; font-size: 14px; margin-bottom: 20px; }";
+      htmlBuilder +=
+        ".title { text-align: left; font-size: 18px; margin-bottom: 10px; }";
+      htmlBuilder += ".info { margin-left: 15px; margin-bottom: 20px; }";
+      htmlBuilder += ".info span { display: block; }";
+      htmlBuilder += ".content { margin-bottom: 20px; }";
+      htmlBuilder += ".keyboard { text-align: center; }";
+      htmlBuilder += ".keyboard img { width: 100%; max-width: 600px; }";
+      htmlBuilder += ".note { margin-top: 10px; }";
+      htmlBuilder +=
+        "table { margin: 10px auto; width: 100%; border-collapse: collapse; }";
+      htmlBuilder +=
+        "th, td { border: 1px solid black; padding: 8px; width: 50%; }";
+      htmlBuilder += "</style>";
+      // highlight
+      htmlBuilder +=
+        '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/styles/default.min.css" />';
+      htmlBuilder += "</head>";
+
+      htmlBuilder += "<body>";
+      htmlBuilder += `<div class="title"><h1>${problem.title}</h1></div>`;
+      htmlBuilder += '<div class="info">';
+      htmlBuilder += `<span><strong>Time limit:</strong> ${problem.timeLimit} ms</span>`;
+      htmlBuilder += `<span><strong>Memory limit:</strong> ${problem.memoryLimit} mb</span>`;
+      htmlBuilder += `<span><strong>Stack limit:</strong> ${problem.stackLimit} mb</span>`;
+      htmlBuilder += "</div>";
+
+      // 添加题面
+      htmlBuilder += this.addContent("Description", problem.description);
+      htmlBuilder += this.addContent("Input", problem.input);
+      htmlBuilder += this.addContent("Output", problem.output);
+      htmlBuilder += this.addContent("Hint", problem.hint);
+
+      // 题面样例
+      htmlBuilder += this.convertToHtmlTable(problem.examples);
+
+      // // 添加 MathJax
+      // htmlBuilder +=
+      //   '<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js" type="text/javascript">';
+      // htmlBuilder += "MathJax.Hub.Config({";
+      // htmlBuilder += '  HTML: ["input/TeX","output/HTML-CSS"],';
+      // htmlBuilder +=
+      //   '  TeX: { extensions: ["AMSmath.js","AMSsymbols.js"], equationNumbers: { autoNumber: "AMS" } },';
+      // htmlBuilder += '  extensions: ["tex2jax.js"],';
+      // htmlBuilder += '  jax: ["input/TeX","output/HTML-CSS"],';
+      // htmlBuilder += "  tex2jax: {";
+      // htmlBuilder += '    inlineMath: [ ["$","$"], ["\\(","\\)"] ],';
+      // htmlBuilder += '    displayMath: [ ["$$","$$"], ["\\[","\\]"] ],';
+      // htmlBuilder += "    processEscapes: true";
+      // htmlBuilder += "  },";
+      // htmlBuilder +=
+      //   '  "HTML-CSS": { availableFonts: ["TeX"], linebreaks: { automatic: true } }';
+      // htmlBuilder += "});";
+      // htmlBuilder += "</";
+      // htmlBuilder += "script>";
+
+      htmlBuilder += "</body></html>";
+
+      if (!htmlBuilder.includes('<span class="katex">')) {
+        // 防止katex后面的片段不被解析
+        // 1. 去除标签间的空格和换行
+        htmlBuilder = this.getCloseHtml(htmlBuilder);
+        htmlBuilder = this.convertedHtml(htmlBuilder);
+
+        // 2. 开头补充无实义标签
+        if (!htmlBuilder.startsWith("<pp>")) {
+          htmlBuilder = `<pp>${htmlBuilder}`;
+        }
+      }
+
+      htmlBuilder = htmlBuilder.replace(
+        '<div class="content"><h2>Description</h2>',
+        '<div class="content"><h2>Description</h2>\n'
+      );
+      // 默认题面样例中没有MathJax
+      htmlBuilder = htmlBuilder.replace(
+        '<div class="table"><h2>Sample</h2>',
+        '<div class="table"><h2>Sample</h2>\n'
+      );
+      // 题面中有代码段
+      const pattern = /(```[^`]*```)/g; // 使用修饰符 s 匹配跨行字符串
+      if (pattern.test(htmlBuilder)) {
+        // 如果包含符合条件的部分，则在该部分前后添加换行符
+        htmlBuilder = htmlBuilder.replace(pattern, "\n$1\n");
+      }
+
+      this.htmlBuilder = htmlBuilder;
+    },
+
+    getCloseHtml(html) {
+      // 使用正则表达式将 html 字符串中的标签空格替换为空字符串
+      return html.replace(/>\s+</g, "><");
+    },
+
+    convertedHtml(htmlString) {
+      // 匹配除了```之间的内容以外的\n，并替换为<br>
+      return htmlString.replace(
+        /(```[\s\S]*?```)|(\n)/g,
+        (match, codeBlock) => {
+          // 如果匹配到了代码块，直接返回原始内容
+          if (codeBlock) return codeBlock;
+          // 否则替换为<br>
+          return "<br>";
+        }
+      );
+    },
+
+    addContent(title, content) {
+      if (content !== null && content !== "") {
+        return `<div class="content"><h2>${title}</h2>${content}</div>`;
+      }
+      return "";
+    },
+
+    convertToHtmlTable(data) {
+      let htmlBuilder = "";
+      if (data !== null && data.length > 0) {
+        htmlBuilder += '<div class="table"><h2>Sample</h2>';
+        htmlBuilder +=
+          '<table class="table table-bordered table-text-center table-vertical-middle">\n';
+        htmlBuilder += "<thead>\n";
+        htmlBuilder += "<tr>\n";
+        htmlBuilder += "<th>Input</th>\n";
+        htmlBuilder += "<th>Output</th>\n";
+        htmlBuilder += "</tr>\n";
+        htmlBuilder += "</thead>\n";
+        htmlBuilder += "<tbody>\n";
+
+        for (let i = 0; i < data.length; i++) {
+          htmlBuilder +=
+            "<tr><td>" + this.convertedHtml(data[i]["input"]) + "</td>";
+          htmlBuilder +=
+            "<td>" + this.convertedHtml(data[i]["output"]) + "</td></tr>";
+        }
+
+        // 完成表格
+        htmlBuilder += "</tbody></table>";
+        htmlBuilder += "</div>";
+      }
+      return htmlBuilder;
+    },
   },
   computed: {
     ...mapGetters([
@@ -1943,6 +2180,12 @@ export default {
         this.isACMorOI = true;
       } else {
         this.isACMorOI = false;
+      }
+    },
+    htmlBuilder(newValue) {
+      // 当 htmlBuilder 发生变化时，手动重新渲染 Editor 组件
+      if (this.$refs.editorRef) {
+        this.$refs.editorRef.currentValue = newValue;
       }
     },
   },

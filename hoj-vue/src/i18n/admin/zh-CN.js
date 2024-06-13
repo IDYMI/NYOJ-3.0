@@ -15,6 +15,7 @@ export const m = {
   Important: '核心设置',
   General: '常用设置',
   User_Admin: '用户管理',
+  Admin_Docker: 'Docker 管理',
   Auth_Admin: '权限管理',
   Announcement_Admin: '公告管理',
   System_Config: '系统配置',
@@ -189,6 +190,7 @@ export const m = {
   Please_input_your_email: '请输入你的邮箱',
   Related_Title: '展示名称',
   Related_IconClass: '展示按钮',
+  Wkhtmltopdf_Config: 'Wkhtmltopdf 设置（转PDF的程序）',
 
   // /views/admin/general/SysSwitch.vue
   Judge_Config: '评测配置',

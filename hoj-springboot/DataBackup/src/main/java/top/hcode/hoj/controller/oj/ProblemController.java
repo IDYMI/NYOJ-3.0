@@ -7,6 +7,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.annotation.AnonApi;
 import top.hcode.hoj.common.result.CommonResult;
+import top.hcode.hoj.pojo.dto.HtmlToPdfDTO;
 import top.hcode.hoj.pojo.dto.LastAcceptedCodeVO;
 import top.hcode.hoj.pojo.dto.PidListDTO;
 import top.hcode.hoj.pojo.vo.*;
@@ -100,6 +101,18 @@ public class ProblemController {
             @RequestParam(value = "problemId", required = true) String problemId,
             @RequestParam(value = "gid", required = false) Long gid) {
         return problemService.getProblemInfo(problemId, gid);
+    }
+
+    /**
+     * @param problemId
+     * @MethodName getProblemPdf
+     * @Description 获取指定题目的pdf链接
+     * @Return CommonResult
+     */
+    @RequestMapping(value = "/get-problem-pdf", method = RequestMethod.POST)
+    @AnonApi
+    public CommonResult<String> getProblemPdf(@RequestBody HtmlToPdfDTO htmlToPdfDTO) {
+        return problemService.getProblemPdf(htmlToPdfDTO);
     }
 
     /**
