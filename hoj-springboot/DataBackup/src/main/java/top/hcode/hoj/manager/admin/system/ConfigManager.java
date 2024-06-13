@@ -272,6 +272,15 @@ public class ConfigManager {
                 .build();
     }
 
+    public ClocDTO getClocConfig() {
+        WebConfig webConfig = nacosSwitchConfig.getWebConfig();
+        return ClocDTO.builder()
+                .clochost(webConfig.getClochost())
+                .clocport(webConfig.getClocport())
+                .clocstartTime(webConfig.getClocstartTime())
+                .build();
+    }
+
     public void setEmailConfig(EmailConfigDTO config) throws StatusFailException {
         WebConfig webConfig = nacosSwitchConfig.getWebConfig();
         if (!StringUtils.isEmpty(config.getEmailHost())) {
@@ -310,6 +319,24 @@ public class ConfigManager {
         }
         if (!StringUtils.isEmpty(config.getWkhtmltopdfPort())) {
             webConfig.setWkhtmltopdfPort(config.getWkhtmltopdfPort());
+        }
+
+        boolean isOk = nacosSwitchConfig.publishWebConfig();
+        if (!isOk) {
+            throw new StatusFailException("修改失败");
+        }
+    }
+
+    public void setClocConfig(ClocDTO config) throws StatusFailException {
+        WebConfig webConfig = nacosSwitchConfig.getWebConfig();
+        if (!StringUtils.isEmpty(config.getClochost())) {
+            webConfig.setClochost(config.getClochost());
+        }
+        if (config.getClocport() != null) {
+            webConfig.setClocport(config.getClocport());
+        }
+        if (!StringUtils.isEmpty(config.getClocstartTime())) {
+            webConfig.setClocstartTime(config.getClocstartTime());
         }
 
         boolean isOk = nacosSwitchConfig.publishWebConfig();

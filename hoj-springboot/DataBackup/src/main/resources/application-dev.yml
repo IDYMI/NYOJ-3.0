@@ -38,6 +38,11 @@ email-password: your_email_password
 wkhtmltopdf-host: http://172.17.0.1
 wkhtmltopdf-port: 8001
 
+# cloc
+cloc-host: http://172.17.0.1
+cloc-port: 8002
+cloc-start-time: 2024-07-18T16:00:00.000Z
+
 # 以下为各个remote judge平台的账号配置
 hdu-username-list:
 hdu-password-list:

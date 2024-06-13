@@ -1670,6 +1670,14 @@ const adminApi = {
       data,
     });
   },
+  admin_getClocConfig() {
+    return ajax('/api/admin/config/get-cloc-config', 'get');
+  },
+  admin_editClocConfig(data) {
+    return ajax('/api/admin/config/set-cloc-config', 'put', {
+      data,
+    });
+  },
   admin_deleteHomeCarousel(id) {
     return ajax('/api/admin/config/home-carousel', 'delete', {
       params: {
@@ -2223,6 +2231,9 @@ const adminApi = {
     return ajax('/api/examination-seat', 'get', {
       params: params,
     });
+  },
+  getUserCodeRecord(data) {
+    return ajax('/api/get-user-code-record', 'post', { data });
   },
 };
 
