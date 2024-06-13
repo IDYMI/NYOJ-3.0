@@ -29,6 +29,11 @@ public class WebConfig {
 
     private Integer wkhtmltopdfPort;
 
+    // cloc配置
+    private String clochost;
+
+    private Integer clocport;
+
     private Boolean emailSsl = true;
 
     private String emailBGImg = "https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/HCODE.png";

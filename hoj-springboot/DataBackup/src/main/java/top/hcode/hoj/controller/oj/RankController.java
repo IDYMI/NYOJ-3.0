@@ -3,12 +3,16 @@ package top.hcode.hoj.controller.oj;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.hcode.hoj.annotation.AnonApi;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.service.oj.RankService;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 /**
  * @Author: Himit_ZH
@@ -36,5 +40,15 @@ public class RankController {
             @RequestParam(value = "searchUser", required = false) String searchUser,
             @RequestParam(value = "type", required = true) Integer type) {
         return rankService.getRankList(limit, currentPage, searchUser, type);
+    }
+
+    /**
+     * @MethodName get-user-code
+     * @Description 获取用户今日份提交记录
+     * @Return CommonResult
+     */
+    @PostMapping("/get-user-code")
+    public CommonResult<Void> getUserCode(@RequestBody Map<String, Object> params) {
+        return rankService.getUserCode(params);
     }
 }

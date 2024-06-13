@@ -40,6 +40,10 @@ email-password: ${EMAIL_PASSWORD:your_email_password}
 wkhtmltopdf-host: ${WKHTMLTOPDF_HOST:http://172.17.0.1}
 wkhtmltopdf-port: ${WKHTMLTOPDF_PORT:8001}
 
+# cloc
+cloc-host: ${WKHTMLTOPDF_HOST:http://172.17.0.1}
+cloc-port: ${WKHTMLTOPDF_PORT:8002}
+
 # 以下为各个remote judge平台的账号配置
 hdu-username-list: ${HDU_ACCOUNT_USERNAME_LIST:}
 hdu-password-list: ${HDU_ACCOUNT_PASSWORD_LIST:}

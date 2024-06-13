@@ -1814,12 +1814,7 @@ export default {
     getProblemPdf() {
       let problem = this.problemData.problem;
       const regex = /\/api\/public\/file\/([^\/]+\.pdf)/;
-      const match = problem.description.match(regex);
-      if (match) {
-        let result = "/api/public/file/" + match[1];
-        // 打开pdf题面
-        window.open(result, "_blank");
-      } else {
+      if (problem.description) {
         this.buildHtml();
 
         // 获取html的结果
@@ -1880,6 +1875,11 @@ export default {
               );
           }
         }, 100); // 设置一个适当的时间
+      } else {
+        const match = problem.description.match(regex);
+        let result = "/api/public/file/" + match[1];
+        // 打开pdf题面
+        window.open(result, "_blank");
       }
     },
 
