@@ -1,5 +1,7 @@
 package top.hcode.hoj.utils;
 
+import top.hcode.hoj.utils.SpringContextUtil;
+
 /**
  * @Author: Himit_ZH
  * @Date: 2021/1/1 13:00
@@ -240,7 +242,44 @@ public class Constants {
         }
 
         public String getPath() {
-            return path;
+            // 获取当前的环境
+            String env = SpringContextUtil.getActiveProfile();
+
+            if (env.equals("dev") && path.startsWith("/hoj")) {
+                // 判断系统
+                Boolean isLinux = isLinux();
+
+                if (!isLinux) {
+                    /**
+                     * 创建子系统在windows中的虚拟硬盘
+                     * 打开此电脑，点击：计算机->映射网络驱动器
+                     * 选择虚拟机的虚拟卷轴，例如： ‘\\wsl.localhost\Ubuntu-20.04’
+                     *
+                     * 教程查看：
+                     * https://www.cnblogs.com/RainFate/p/16771349.html
+                     * 后面项目根目录所在的位置
+                     */
+
+                    // dev 环境对应的根目录
+                    String winPath = "C:\\Users\\Lenovo\\Desktop\\hoj";
+                    return winPath + path.replace("/", "\\");
+                } else {
+                    String linuxPath = "/home/dym/hoj";
+                    return linuxPath + path;
+                }
+            } else {
+                return path;
+            }
+        }
+
+        public static Boolean isLinux() {
+            String osName = System.getProperty("os.name").toLowerCase();
+
+            // 判断操作系统类型
+            if (osName.contains("win")) {
+                return false;
+            }
+            return true;
         }
     }
 
