@@ -219,6 +219,8 @@ public class AdminProblemManager {
 
         // 记录修改题目的用户
         problemDto.getProblem().setModifiedUser(userRolesVo.getUsername());
+        // 将题面清空
+        problemDto.getProblem().setPdfDescription("");
 
         boolean result = problemEntityService.adminUpdateProblem(problemDto);
         if (result) { // 更新成功

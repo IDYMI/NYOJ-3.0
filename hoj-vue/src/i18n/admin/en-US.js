@@ -15,6 +15,7 @@ export const m = {
   Important: 'Important',
   General: 'General',
   User_Admin: 'Admin User',
+  Admin_Docker: 'Admin Docker',
   Auth_Admin: 'Auth Admin',
   Announcement_Admin: 'Announcement',
   System_Config: 'System Config',
@@ -189,6 +190,7 @@ export const m = {
   Please_input_your_email: 'Please input your email',
   Related_Title: 'Title',
   Related_IconClass: 'Icon Class',
+  Wkhtmltopdf_Config: 'Wkhtmltopdf Config',
 
   // /views/admin/general/SysSwitch.vue
   Judge_Config: 'Judge Config',

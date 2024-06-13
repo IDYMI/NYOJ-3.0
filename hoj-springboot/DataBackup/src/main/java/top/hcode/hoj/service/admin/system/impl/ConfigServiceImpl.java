@@ -87,9 +87,24 @@ public class ConfigServiceImpl implements ConfigService {
     }
 
     @Override
+    public CommonResult<WkhtmltopdfDTO> getWkhtmltopdfConfig() {
+        return CommonResult.successResponse(configManager.getWkhtmltopdfConfig());
+    }
+
+    @Override
     public CommonResult<Void> setEmailConfig(EmailConfigDTO config) {
         try {
             configManager.setEmailConfig(config);
+            return CommonResult.successResponse();
+        } catch (StatusFailException e) {
+            return CommonResult.errorResponse(e.getMessage());
+        }
+    }
+
+    @Override
+    public CommonResult<Void> setWkhtmltopdfConfig(WkhtmltopdfDTO config) {
+        try {
+            configManager.setWkhtmltopdfConfig(config);
             return CommonResult.successResponse();
         } catch (StatusFailException e) {
             return CommonResult.errorResponse(e.getMessage());

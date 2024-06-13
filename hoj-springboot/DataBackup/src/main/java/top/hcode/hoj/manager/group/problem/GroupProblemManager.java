@@ -258,6 +258,8 @@ public class GroupProblemManager {
         Problem existedProblem = problemEntityService.getOne(problemQueryWrapper);
 
         problemDto.getProblem().setModifiedUser(userRolesVo.getUsername());
+        // 将题面清空
+        problemDto.getProblem().setPdfDescription("");
 
         if (existedProblem != null && existedProblem.getId().longValue() != pid) {
             throw new StatusFailException("当前的Problem ID 已被使用，请重新更换新的！");

@@ -3,6 +3,7 @@ package top.hcode.hoj.manager.oj;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,21 +15,27 @@ import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusForbiddenException;
 import top.hcode.hoj.common.exception.StatusNotFoundException;
 import top.hcode.hoj.dao.contest.ContestEntityService;
+import top.hcode.hoj.dao.contest.ContestProblemEntityService;
 import top.hcode.hoj.dao.judge.JudgeEntityService;
 import top.hcode.hoj.dao.problem.*;
 import top.hcode.hoj.exception.AccessException;
+import top.hcode.hoj.manager.group.GroupManager;
+import top.hcode.hoj.pojo.dto.HtmlToPdfDTO;
 import top.hcode.hoj.pojo.dto.LastAcceptedCodeVO;
 import top.hcode.hoj.pojo.dto.PidListDTO;
 import top.hcode.hoj.pojo.entity.contest.Contest;
+import top.hcode.hoj.pojo.entity.contest.ContestProblem;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.problem.*;
 import top.hcode.hoj.pojo.vo.*;
 import top.hcode.hoj.shiro.AccountProfile;
 import top.hcode.hoj.utils.Constants;
+import top.hcode.hoj.utils.HtmlToPdfUtils;
 import top.hcode.hoj.validator.AccessValidator;
 import top.hcode.hoj.validator.ContestValidator;
 import top.hcode.hoj.validator.GroupValidator;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.regex.Pattern;
@@ -79,6 +86,15 @@ public class ProblemManager {
 
     @Autowired
     private ContestManager contestManager;
+
+    @Autowired
+    private HtmlToPdfUtils htmlToPdfUtils;
+
+    @Autowired
+    private ContestProblemEntityService contestProblemEntityService;
+
+    @Autowired
+    private GroupManager groupManager;
 
     /**
      * @MethodName getProblemList
@@ -371,6 +387,94 @@ public class ProblemManager {
 
         // 将数据统一写入到一个Vo返回数据实体类中
         return new ProblemInfoVO(problem, tags, languagesStr, problemCount, LangNameAndCode);
+    }
+
+    public String getProblemPdf(HtmlToPdfDTO htmlToPdfDTO)
+            throws StatusForbiddenException, StatusNotFoundException, IOException, StatusFailException {
+
+        // 获取当前登录的用户
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
+
+        String problemId = htmlToPdfDTO.getProblemId();
+        Long gid = htmlToPdfDTO.getGid();
+        String html = htmlToPdfDTO.getHtml();
+
+        Long contestId = htmlToPdfDTO.getContestId();
+
+        QueryWrapper<Problem> wrapper = new QueryWrapper<Problem>();
+        if (contestId != null && contestId != 0L) {
+
+            // 获取本场比赛的状态
+            Contest contest = contestEntityService.getById(contestId);
+
+            boolean isRoot = groupManager.getGroupAuthAdmin(contest.getGid());
+
+            // 需要对该比赛做判断，是否处于开始或结束状态才可以获取题目，同时若是私有赛需要判断是否已注册（比赛管理员包括超级管理员可以直接获取）
+            contestValidator.validateContestAuth(contest, userRolesVo, isRoot);
+
+            // 根据cid和displayId获取pid
+            QueryWrapper<ContestProblem> contestProblemQueryWrapper = new QueryWrapper<>();
+            contestProblemQueryWrapper.eq("cid", contestId).eq("display_id", problemId);
+            ContestProblem contestProblem = contestProblemEntityService.getOne(contestProblemQueryWrapper);
+
+            if (contestProblem == null) {
+                throw new StatusNotFoundException("该比赛题目不存在");
+            }
+
+            Long pid = contestProblem.getPid();
+            wrapper.eq("id", pid);
+        } else {
+            wrapper.eq("problem_id", problemId);
+        }
+
+        if (gid == null) {
+            wrapper.isNull("gid");
+        } else {
+            wrapper.eq("gid", gid);
+        }
+        // 查询题目详情
+        Problem problem = problemEntityService.getOne(wrapper, false);
+        if (problem == null) {
+            throw new StatusNotFoundException("该题号对应的题目不存在");
+        }
+
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root")
+                || SecurityUtils.getSubject().hasRole("admin");
+        if (problem.getIsGroup() && !isRoot) {
+            if (gid == null) {
+                throw new StatusForbiddenException("题目为团队所属，此处不支持访问，请前往团队查看！");
+            }
+            if (!groupValidator.isGroupMember(userRolesVo.getUid(), problem.getGid())) {
+                throw new StatusForbiddenException("对不起，您并非该题目所属的团队内成员，无权查看题目！");
+            }
+        }
+
+        // 屏蔽一些题目参数
+        problem.setJudgeExtraFile(null)
+                .setSpjCode(null)
+                .setSpjLanguage(null);
+
+        String fileName = problem.getPdfDescription();
+
+        // 如果不存在对应pdf题面则创建
+        if (StringUtils.isEmpty(fileName)) {
+
+            String pdf = htmlToPdfUtils.convertByHtml(html);
+            if (StringUtils.isEmpty(pdf)) {
+                throw new IOException("PDF题面保存失败！");
+            }
+
+            fileName = Constants.File.FILE_API.getPath() + pdf;
+
+            // 更新对应数据库
+            UpdateWrapper<Problem> updateWrapper = new UpdateWrapper<>();
+            updateWrapper.eq("id", problem.getId())
+                    .set("pdf_description", fileName);
+            problemEntityService.update(updateWrapper);
+
+        }
+
+        return fileName;
     }
 
     public LastAcceptedCodeVO getUserLastAcceptedCode(Long pid, Long cid) {
