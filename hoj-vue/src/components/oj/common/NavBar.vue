@@ -12,6 +12,18 @@
           <router-link to="/home" v-if="mode == 'defalut'">
             <el-image :src="big_imgUrl" style="width:100%;"></el-image>
           </router-link>
+          <div class="notification">
+            <span>NYOJ 于2024年7月18日起开始域名迁移，目标域名为 xcpc.nyist.edu.cn，本域名将于2024年7月25日停止服务！</span>
+          </div>
+          <div class="notification">
+            <span>本域名将通知转移后的目标域名是否开通访问，目标域名如果无法访问，请耐心等待在本域名等待通知。</span>
+          </div>
+          <div class="notification">
+            <span>现OJ仅提供功能服务，题库不再更新，对应的做题数据不再转移。</span>
+          </div>
+          <div class="notification">
+            <span>给大家造成的影响我们深表歉意，也同时希望大家继续关注并支持NYOJ，请各位相互转达通知，感谢大家的使用！</span>
+          </div>
           <div class="logo">
             <router-link to="/home">
               <el-image style="width: 139px; height: 50px" :src="imgUrl" fit="scale-down"></el-image>
@@ -70,6 +82,11 @@
               <el-menu-item index="/oj-rank">
                 {{
                 $t("m.NavBar_MultiOj_Rank")
+                }}
+              </el-menu-item>
+              <el-menu-item index="/code-rank">
+                {{
+                $t("m.NavBar_Code_Rank")
                 }}
               </el-menu-item>
             </el-submenu>
@@ -599,6 +616,20 @@
                   }}
                 </mu-list-item-title>
               </mu-list-item>
+              <mu-list-item
+                button
+                :ripple="false"
+                slot="nested"
+                to="/code-rank"
+                @click="opendrawer = !opendrawer"
+                active-class="mobile-menu-active"
+              >
+                <mu-list-item-title>
+                  {{
+                  $t("m.NavBar_Code_Rank")
+                  }}
+                </mu-list-item-title>
+              </mu-list-item>
             </mu-list-item>
 
             <mu-list-item
@@ -966,6 +997,17 @@ export default {
 };
 </script>
 <style scoped>
+.notification {
+  height: 100%;
+  width: 100%;
+  text-align: left;
+  font-size: 20px;
+  padding: 0 20px;
+  font-family: Arial, Helvetica, sans-serif;
+  line-height: 1.5; /* 增加行间距 */
+  color: #333; /* 示例文本颜色 */
+}
+
 @media screen and (min-width: 1050px) {
   #header {
     min-width: 300px;

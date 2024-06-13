@@ -263,6 +263,40 @@
         }}
       </el-button>
     </el-card>
+
+    <el-card style="margin-top: 15px">
+      <div slot="header">
+        <span class="panel-title home-title">{{ $t("m.Cloc_Config") }}</span>
+      </div>
+      <el-form label-position="left" label-width="80px" :model="cloc">
+        <el-row :gutter="20">
+          <el-col :md="12" :xs="24">
+            <el-form-item :label="$t('m.Host')" required label-width="80px">
+              <el-input v-model="cloc.clochost" :placeholder="$t('m.Host')"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :md="12" :xs="24">
+            <el-form-item :label="$t('m.Port')" required label-width="80px">
+              <el-input v-model="cloc.clocport" :placeholder="$t('m.Port')"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :md="12" :xs="24">
+            <el-form-item :label="$t('m.Start_Time')" required label-width="80px">
+              <el-date-picker
+                v-model="cloc.clocstartTime"
+                type="datetime"
+                :placeholder="$t('m.Start_Time')"
+              ></el-date-picker>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <el-button type="primary" @click.native="saveClocConfig" size="small">
+        {{
+        $t("m.Save")
+        }}
+      </el-button>
+    </el-card>
   </div>
 </template>
 
@@ -288,6 +322,11 @@ export default {
       wkhtmltopdf: {
         wkhtmltopdfHost: null,
         wkhtmltopdfPort: null,
+      },
+      cloc: {
+        clochost: null,
+        clocport: null,
+        clocstartTime: null,
       },
       websiteConfig: {},
       databaseConfig: {},
@@ -324,6 +363,15 @@ export default {
       } else {
         this.init = true;
         myMessage.warning("No Wkhtmltopdf Config");
+      }
+    });
+
+    api.admin_getClocConfig().then((res) => {
+      if (res.data.data) {
+        this.cloc = res.data.data;
+      } else {
+        this.init = true;
+        myMessage.warning("No Cloc Config");
       }
     });
   },
@@ -449,6 +497,17 @@ export default {
     },
     saveWkhtmltopdfConfig() {
       api.admin_editWkhtmltopdfConfig(this.wkhtmltopdf).then(
+        (res) => {
+          myMessage.success(this.$i18n.t("m.Update_Successfully"));
+          this.saved = true;
+        },
+        () => {
+          this.saved = false;
+        }
+      );
+    },
+    saveClocConfig() {
+      api.admin_editClocConfig(this.cloc).then(
         (res) => {
           myMessage.success(this.$i18n.t("m.Update_Successfully"));
           this.saved = true;

@@ -130,6 +130,16 @@ public class StartupRunner implements CommandLineRunner {
     @Value("${wkhtmltopdf-port}")
     private Integer wkhtmltopdfPort;
 
+    // cloc配置
+    @Value("${cloc-host}")
+    private String clocHost;
+
+    @Value("${cloc-port}")
+    private Integer clocPort;
+
+    @Value("${cloc-start-time}")
+    private String clocstartTime;
+
     @Value("${hdu-username-list}")
     private List<String> hduUsernameList;
 
@@ -202,7 +212,7 @@ public class StartupRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        // 修改nacos上的默认、web、switch、wkhtmltopdf配置文件
+        // 修改nacos上的默认、web、switch、wkhtmltopdf、cloc配置文件
         initDefaultConfig();
 
         initWebConfig();
@@ -210,6 +220,8 @@ public class StartupRunner implements CommandLineRunner {
         initSwitchConfig();
 
         initWKHTMLTOPDFConfig();
+
+        initCLOCConfig();
 
         upsertHOJLanguageV2();
         // upsertHOJLanguage("PHP", "PyPy2", "PyPy3", "JavaScript Node", "JavaScript
@@ -503,6 +515,29 @@ public class StartupRunner implements CommandLineRunner {
         if (!Objects.equals(webConfig.getWkhtmltopdfPort(), wkhtmltopdfPort)
                 && (webConfig.getWkhtmltopdfPort() == null || wkhtmltopdfPort != 8001)) {
             webConfig.setWkhtmltopdfPort(wkhtmltopdfPort);
+            isChanged = true;
+        }
+        if (isChanged) {
+            nacosSwitchConfig.publishWebConfig();
+        }
+    }
+
+    private void initCLOCConfig() {
+        WebConfig webConfig = nacosSwitchConfig.getWebConfig();
+        boolean isChanged = false;
+        if (!Objects.equals(webConfig.getClochost(), clocHost)
+                && (webConfig.getClochost() == null || !"http://172.17.0.1".equals(clocHost))) {
+            webConfig.setClochost(clocHost);
+            isChanged = true;
+        }
+        if (!Objects.equals(webConfig.getClocport(), clocPort)
+                && (webConfig.getClocport() == null || clocPort != 8002)) {
+            webConfig.setClocport(clocPort);
+            isChanged = true;
+        }
+        if (!Objects.equals(webConfig.getClocstartTime(), clocstartTime)
+                && (webConfig.getClocstartTime() == null || !"2024-07-18T16:00:00.000Z".equals(clocstartTime))) {
+            webConfig.setClocstartTime(clocstartTime);
             isChanged = true;
         }
         if (isChanged) {

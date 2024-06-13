@@ -29,6 +29,8 @@ import top.hcode.hoj.utils.RedisUtils;
 
 import java.io.IOException;
 import java.net.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -278,4 +280,22 @@ public class DataBackupApplicationTests {
         System.out.println(b);
     }
 
+    public static void main(String[] args) {
+        String startTime = null; // Set these values as needed
+        String endTime = null; // Set these values as needed
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        try {
+            Date startTimeDate = startTime != null ? sdf.parse(startTime) : null;
+            Date endTimeDate = endTime != null ? sdf.parse(endTime) : null;
+
+            System.out.println(startTimeDate);
+            System.out.println(endTimeDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+    }
 }

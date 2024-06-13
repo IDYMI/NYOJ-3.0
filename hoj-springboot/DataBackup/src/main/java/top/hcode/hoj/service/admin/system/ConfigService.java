@@ -26,9 +26,13 @@ public interface ConfigService {
 
     public CommonResult<WkhtmltopdfDTO> getWkhtmltopdfConfig();
 
+    public CommonResult<ClocDTO> getClocConfig();
+
     public CommonResult<Void> setEmailConfig(EmailConfigDTO config);
 
     public CommonResult<Void> setWkhtmltopdfConfig(WkhtmltopdfDTO config);
+
+    public CommonResult<Void> setClocConfig(ClocDTO config);
 
     public CommonResult<Void> testEmail(TestEmailDTO testEmailDto);
 
